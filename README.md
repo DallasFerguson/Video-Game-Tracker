@@ -1,9 +1,11 @@
 #README
 Capstone Project Proposal
-Description
+
+Description:
 The goal of this project is to create a website that integrates the IGDB API to fetch game data and allows users to write reviews, rate games, and view rankings. The website will serve as a platform for gamers to share their opinions and discover new games based on community feedback.
 
-Stack
+Stack:
+
 Frontend: React.js (for a dynamic and responsive user interface)
 
 Backend: Node.js with Express.js (to handle API requests and user data)
