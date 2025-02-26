@@ -10,7 +10,7 @@ Backend: Node.js with Express.js (to handle API requests and user data)
 
 Database: MongoDB (to store user accounts, reviews, and ratings)
 
-Authentication: Firebase Authentication or Passport.js (for user login/signup)
+Authentication: Firebase Authentication or Passport.js (for user login/signup) //might change later idk
 
 API: IGDB API (to fetch game data)
 
