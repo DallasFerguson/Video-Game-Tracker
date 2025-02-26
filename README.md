@@ -2,52 +2,57 @@
 Capstone Project Proposal
 
 Description:
+
 The goal of this project is to create a website that integrates the IGDB API to fetch game data and allows users to write reviews, rate games, and view rankings. The website will serve as a platform for gamers to share their opinions and discover new games based on community feedback.
 
 Stack:
 
-Frontend: React.js (for a dynamic and responsive user interface)
+  Frontend: React.js (for a dynamic and responsive user interface)
 
-Backend: Node.js with Express.js (to handle API requests and user data)
+  Backend: Node.js with Express.js (to handle API requests and user data)
 
-Database: MongoDB (to store user accounts, reviews, and ratings)
+  Database: MongoDB (to store user accounts, reviews, and ratings)
 
-Authentication: Firebase Authentication or Passport.js (for user login/signup) //might change later idk
+  Authentication: Firebase Authentication or Passport.js (for user login/signup) //might change later idk
 
-API: IGDB API (to fetch game data)
+  API: IGDB API (to fetch game data)
 
 Focus:
+
 This will be a full-stack application with an even focus on both front-end and back-end development. The front-end will provide a seamless user experience, while the back-end will handle data processing, API integration, and user authentication.
 
 Type:
+
 This will be a website designed to be responsive and accessible on both desktop and mobile devices.
 
 Goal:
-The primary goal of this project is to create a platform where gamers can:
 
-Search for games using the IGDB API.
+  The primary goal of this project is to create a platform where gamers can:
 
-Write and share reviews for games.
+  Search for games using the IGDB API.
 
-Rate games on a numerical or star-based scale.
+  Write and share reviews for games.
 
-View community-driven rankings of top-rated games.
+  Rate games on a numerical or star-based scale.
 
-Try to remove bloat of other versions of games
+  View community-driven rankings of top-rated games.
+
+  Try to remove bloat of other versions of games
 
 The target demographic includes:
 
-Enthusiasts: Users interested in discovering new games based on community reviews.
+  Enthusiasts: Users interested in discovering new games based on community reviews.
 
-Gamers: Individuals who play video games and want to share their opinions.
+  Gamers: Individuals who play video games and want to share their opinions.
 
-Casual Users: People looking for quick information about games and their ratings.
+  Casual Users: People looking for quick information about games and their ratings.
 
-Social Gamers: People who want to want a space to share opinions with friends
+  Social Gamers: People who want to want a space to share opinions with friends
 
 Data:
-Primary Data Source: IGDB API (for game details such as title, description, release date, genre, etc.).
 
-User-Generated Data: Reviews and ratings submitted by users.
+  Primary Data Source: IGDB API (for game details such as title, description, release date, genre, etc.).
 
-Database: MongoDB will store user accounts, reviews, and ratings.
+  User-Generated Data: Reviews and ratings submitted by users.
+
+  Database: MongoDB will store user accounts, reviews, and ratings.
