@@ -1,0 +1,22 @@
+.trending-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.trending-page h1 {
+  color: var(--dark-color);
+  margin-bottom: var(--spacing-xs);
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: var(--spacing-xl);
+  font-size: var(--text-lg);
+}
+
+@media (max-width: 768px) {
+  .trending-page {
+    padding: var(--spacing-md);
+  }
+}

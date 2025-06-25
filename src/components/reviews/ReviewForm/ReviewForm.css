@@ -1,0 +1,51 @@
+.review-form {
+  background: white;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.review-form h3 {
+  margin-top: 0;
+  color: var(--dark-color);
+}
+
+.review-error {
+  color: var(--danger-color);
+  background-color: rgba(227, 53, 13, 0.1);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.review-form .form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.review-form label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: bold;
+  color: var(--dark-color);
+}
+
+.review-form textarea {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid #ddd;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.review-form textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(42, 117, 187, 0.2);
+}
+
+.review-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
