@@ -13,8 +13,6 @@ Stack:
 
   Database: MongoDB (to store user accounts, reviews, and ratings)
 
-  Authentication: Firebase Authentication or Passport.js (for user login/signup) //might change later idk
-
   API: IGDB API (to fetch game data)
 
 Focus:
