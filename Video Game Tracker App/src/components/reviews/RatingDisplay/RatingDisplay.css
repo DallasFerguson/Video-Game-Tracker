@@ -1,0 +1,29 @@
+.rating-display {
+  display: flex;
+  align-items: center;
+}
+
+.rating-star {
+  font-size: 1rem;
+  color: #ddd;
+  position: relative;
+}
+
+.rating-star.full {
+  color: var(--secondary-color);
+}
+
+.rating-star.half::before {
+  content: '★';
+  position: absolute;
+  width: 50%;
+  overflow: hidden;
+  color: var(--secondary-color);
+}
+
+.rating-value {
+  margin-left: var(--spacing-xs);
+  font-weight: bold;
+  color: var(--dark-color);
+  font-size: 0.9rem;
+}
