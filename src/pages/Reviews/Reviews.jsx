@@ -1,11 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getGameDetails, getUserReviews, submitReview, deleteReview } from '../../../api';
-import ReviewForm from '../../../components/reviews/ReviewForm/ReviewForm';
-import ReviewList from '../../../components/reviews/ReviewList/ReviewList';
-import useAuth from '../../../hooks/useAuth';
-import LoadingSpinner from '../../../components/ui/LoadingSpinner/LoadingSpinner';
-import './Reviews.css';
+import { getGameDetails, getUserReviews, submitReview, deleteReview } from '../../api';
+import ReviewForm from '../../components/reviews/ReviewForm/ReviewForm';
+import ReviewList from '../../components/reviews/ReviewList/ReviewList';
+import useAuth from '../../hooks/useAuth';
+import LoadingSpinner from '../../components/ui/LoadingSpinner/LoadingSpinner';
 
 const Reviews = () => {
   const { gameId } = useParams();
