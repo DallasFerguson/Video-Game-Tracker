@@ -1,10 +1,8 @@
-import './Home.css';
-
 export default function Home() {
   return (
-    <div className="home-page">
-      <h1>Welcome to Game Tracker</h1>
-      <p>Start tracking your favorite games!</p>
+    <div style={{ backgroundColor: 'red', padding: '20px', color: 'white' }}>
+      <h1>TEST - Game Tracker</h1>
+      <p>If you see this, Home component is working</p>
     </div>
   );
 }
