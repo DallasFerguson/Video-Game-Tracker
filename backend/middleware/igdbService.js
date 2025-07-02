@@ -19,7 +19,7 @@ const getAccessToken = async () => {
 
   try {
     const response = await axios.post(
-      `https://id.twitch.tv/oauth2/token?client_id=${s0te8cn7hxx4vmu6iys7vf4rahiq70}&client_secret=${go9eh1a4d1q1phpbv6v8xdgp80otcn}&grant_type=client_credentials`
+      `https://id.twitch.tv/oauth2/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials`
     );
 
     accessToken = response.data.access_token;
