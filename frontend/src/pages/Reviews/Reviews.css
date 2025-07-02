@@ -1,0 +1,77 @@
+.reviews-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.reviews-loading,
+.reviews-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.reviews-error {
+  flex-direction: column;
+  text-align: center;
+}
+
+.reviews-error p {
+  color: var(--danger-color);
+}
+
+.reviews-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.reviews-header h1 {
+  margin: 0;
+  color: var(--dark-color);
+}
+
+.game-cover {
+  width: 60px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.user-review-section,
+.all-reviews-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.user-review-section h2,
+.all-reviews-section h2 {
+  color: var(--dark-color);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid #eee;
+}
+
+.no-reviews {
+  color: #666;
+  text-align: center;
+  padding: var(--spacing-xl);
+  background-color: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 768px) {
+  .reviews-page {
+    padding: var(--spacing-md);
+  }
+
+  .reviews-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+}
