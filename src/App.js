@@ -1,11 +1,9 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LibraryProvider } from './contexts/LibraryContext';
 import { WishlistProvider } from './contexts/WishlistContext';
 import { NotificationProvider } from './contexts/NotificationContext';
-import ProtectedRoute from './components/routes/ProtectedRoute';
-import GuestRoute from './components/routes/GuestRoute';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home/Home';
 import Login from './pages/Auth/Login';
@@ -17,47 +15,66 @@ import Search from './pages/Games/Search/Search';
 import Trending from './pages/Games/Trending/Trending';
 import Reviews from './pages/Reviews/Reviews';
 import NotFound from './pages/NotFound/NotFound';
+import ProtectedRoute from './components/routes/ProtectedRoute';
+import GuestRoute from './components/routes/GuestRoute';
 import './App.css';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      // Public routes
+      { index: true, element: <Home /> },
+      { path: 'games/:id', element: <GameDetail /> },
+      { path: 'search', element: <Search /> },
+      { path: 'trending', element: <Trending /> },
+      { path: 'games/:id/reviews', element: <Reviews /> },
+      
+      // Auth routes (guest only)
+      { 
+        path: 'login', 
+        element: <GuestRoute><Login /></GuestRoute> 
+      },
+      { 
+        path: 'register', 
+        element: <GuestRoute><Register /></GuestRoute> 
+      },
+      
+      // Protected routes
+      { 
+        path: 'library', 
+        element: <ProtectedRoute><Library /></ProtectedRoute> 
+      },
+      { 
+        path: 'wishlist', 
+        element: <ProtectedRoute><Wishlist /></ProtectedRoute> 
+      },
+      
+      // 404
+      { path: '*', element: <NotFound /> }
+    ]
+  }
+], {
+  future: {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true
+  }
+});
 
 function App() {
   return (
-    <BrowserRouter>
-      <ThemeProvider>
-        <NotificationProvider>
-          <AuthProvider>
-            <LibraryProvider>
-              <WishlistProvider>
-                <Layout>
-                  <Routes>
-                    {/* Public Routes */}
-                    <Route path="/" element={<Home />} />
-                    <Route path="/games/:id" element={<GameDetail />} />
-                    <Route path="/search" element={<Search />} />
-                    <Route path="/trending" element={<Trending />} />
-                    <Route path="/games/:id/reviews" element={<Reviews />} />
-
-                    {/* Auth Routes (Only for guests) */}
-                    <Route element={<GuestRoute />}>
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/register" element={<Register />} />
-                    </Route>
-
-                    {/* Protected Routes (Only for authenticated users) */}
-                    <Route element={<ProtectedRoute />}>
-                      <Route path="/library" element={<Library />} />
-                      <Route path="/wishlist" element={<Wishlist />} />
-                    </Route>
-
-                    {/* 404 Not Found */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Layout>
-              </WishlistProvider>
-            </LibraryProvider>
-          </AuthProvider>
-        </NotificationProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <NotificationProvider>
+        <AuthProvider>
+          <LibraryProvider>
+            <WishlistProvider>
+              <RouterProvider router={router} />
+            </WishlistProvider>
+          </LibraryProvider>
+        </AuthProvider>
+      </NotificationProvider>
+    </ThemeProvider>
   );
 }
 

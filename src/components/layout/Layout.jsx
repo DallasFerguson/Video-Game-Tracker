@@ -7,7 +7,7 @@ export default function Layout() {
     <div className="app-layout">
       <Navbar />
       <main className="content">
-        <Outlet /> {/* This renders child routes */}
+        <Outlet />
       </main>
     </div>
   );
