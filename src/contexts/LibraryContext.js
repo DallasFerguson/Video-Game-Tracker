@@ -1,5 +1,6 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect, useCallback, useContext } from 'react';
 import { getUserLibrary } from '../api/library';
+import { AuthContext } from './AuthContext'; // Add this import
 
 export const LibraryContext = createContext();
 
@@ -7,7 +8,7 @@ export const LibraryProvider = ({ children }) => {
   const [library, setLibrary] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext); // Now this will work
 
   const fetchLibrary = useCallback(async () => {
     if (!user) return;
@@ -58,3 +59,11 @@ export const LibraryProvider = ({ children }) => {
     </LibraryContext.Provider>
   );
 };
+
+export function useLibrary() {
+  const context = useContext(LibraryContext);
+  if (context === undefined) {
+    throw new Error('useLibrary must be used within a LibraryProvider');
+  }
+  return context;
+}
