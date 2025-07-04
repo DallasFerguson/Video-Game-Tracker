@@ -32,7 +32,16 @@ app.use((err, req, res, next) => {
 });
 
 //define PORT
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 
 //start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// In backend/server.js
+const cors = require('cors');
+
+// Configure CORS to allow requests from your frontend
+app.use(cors({
+  origin: 'http://localhost:3000', // Your frontend URL
+  credentials: true
+}));
