@@ -7,7 +7,11 @@ require('dotenv').config();
 const app = express();
 
 //middleware
-app.use(cors());
+// Configure CORS to allow requests from your frontend
+app.use(cors({
+  origin: 'http://localhost:3000', // Your frontend URL
+  credentials: true
+}));
 app.use(express.json());
 
 //connect to MongoDB
@@ -36,12 +40,3 @@ const PORT = process.env.PORT || 3001;
 
 //start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-// In backend/server.js
-const cors = require('cors');
-
-// Configure CORS to allow requests from your frontend
-app.use(cors({
-  origin: 'http://localhost:3000', // Your frontend URL
-  credentials: true
-}));

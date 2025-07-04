@@ -1,4 +1,4 @@
-const igdbService = require('../services/igdbService');
+const igdbService = require('../middleware/igdbService');
 
 // Search games
 exports.searchGames = async (req, res) => {
