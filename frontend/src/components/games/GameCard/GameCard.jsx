@@ -37,15 +37,15 @@ const GameCard = ({ game, showActions = true }) => {
   return (
     <div className="game-card">
       <div className="game-card-cover">
-        {game.cover ? (
-          <img 
-            src={`https:${game.cover.url.replace('t_thumb', 't_cover_big')}`} 
-            alt={game.name} 
-          />
-        ) : (
-          <div className="game-card-no-image">No Image</div>
-        )}
-      </div>
+  {game.cover && game.cover.url ? (
+    <img 
+      src={game.cover.url.startsWith('//') ? `https:${game.cover.url}` : game.cover.url} 
+      alt={game.name} 
+    />
+  ) : (
+    <div className="game-card-no-image">No Image</div>
+  )}
+</div>
       
       <div className="game-card-info">
         <h3 className="game-card-title">{game.name}</h3>
