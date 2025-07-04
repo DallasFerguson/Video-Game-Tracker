@@ -1,0 +1,22 @@
+.game-status {
+  margin: var(--spacing-md) 0;
+}
+
+.game-status-label {
+  font-weight: bold;
+  margin-bottom: var(--spacing-xs);
+  color: var(--dark-color);
+}
+
+.game-status-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+@media (max-width: 480px) {
+  .game-status-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
