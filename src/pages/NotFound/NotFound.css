@@ -1,0 +1,25 @@
+.not-found {
+  text-align: center;
+  padding: 2rem;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-link {
+  color: #2a75bb;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid #2a75bb;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.home-link:hover {
+  background-color: #2a75bb;
+  color: white;
+}
