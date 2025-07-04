@@ -1,52 +1,36 @@
+// src/api/games.js
 import axios from 'axios';
 
-// Fallback to a default if environment variable is not available
-const API_BASE = 'http://localhost:3001/api';
+// Use the proper API base URL from environment variables with fallback
+const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api';
 
-console.log('API Base URL being used:', API_BASE);
-
-// Mock data for when the backend is unavailable
-const MOCK_GAMES = [
-  { 
-    id: 1, 
-    name: 'The Legend of Zelda: Breath of the Wild', 
-    cover: { url: '//images.igdb.com/igdb/image/upload/t_cover_big/co3p2d.jpg' }, 
-    first_release_date: 1488499200, 
-    rating: 93 
-  },
-  { 
-    id: 2, 
-    name: 'Cyberpunk 2077', 
-    cover: { url: '//images.igdb.com/igdb/image/upload/t_cover_big/co2mjs.jpg' }, 
-    first_release_date: 1607558400, 
-    rating: 85 
-  },
-  { 
-    id: 3, 
-    name: 'Red Dead Redemption 2', 
-    cover: { url: '//images.igdb.com/igdb/image/upload/t_cover_big/co1q1f.jpg' }, 
-    first_release_date: 1540512000, 
-    rating: 94 
-  },
-  { 
-    id: 4, 
-    name: 'Elden Ring', 
-    cover: { url: '//images.igdb.com/igdb/image/upload/t_cover_big/co4jni.jpg' }, 
-    first_release_date: 1645747200, 
-    rating: 96 
-  },
-  { 
-    id: 5, 
-    name: 'Minecraft', 
-    cover: { url: '//images.igdb.com/igdb/image/upload/t_cover_big/co49x5.jpg' }, 
-    first_release_date: 1321401600, 
-    rating: 90 
+// Configure axios instance with proper error handling
+const gamesApi = axios.create({
+  baseURL: API_BASE,
+  timeout: 10000, // 10 second timeout
+  headers: {
+    'Content-Type': 'application/json'
   }
-];
+});
 
+// Add request interceptor to include auth token when available
+gamesApi.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+/**
+ * Search for games using the IGDB API
+ * @param {string} query - Search query
+ * @param {number} limit - Maximum number of results
+ * @returns {Promise<Array>} Array of game objects
+ */
 export const searchGames = async (query, limit = 10) => {
   try {
-    const response = await axios.get(`${API_BASE}/games/search`, {
+    const response = await gamesApi.get('/games/search', {
       params: { query, limit }
     });
     
@@ -54,23 +38,24 @@ export const searchGames = async (query, limit = 10) => {
       id: game.id,
       name: game.name,
       cover: game.cover,
-      release_date: game.first_release_date,
+      first_release_date: game.first_release_date,
       rating: game.rating
     }));
   } catch (error) {
-    console.error('Search API error:', error);
-    console.log('Using mock data instead');
-    
-    // Filter mock data based on the search query
-    return MOCK_GAMES.filter(game => 
-      game.name.toLowerCase().includes(query.toLowerCase())
-    );
+    console.error('Error searching games:', error);
+    // Instead of falling back to mock data, throw the error to be handled by the component
+    throw new Error(error.response?.data?.message || 'Failed to search games. Please try again later.');
   }
 };
 
+/**
+ * Get detailed information about a specific game
+ * @param {string|number} gameId - ID of the game to fetch
+ * @returns {Promise<Object>} Game details object
+ */
 export const getGameDetails = async (gameId) => {
   try {
-    const response = await axios.get(`${API_BASE}/games/${gameId}`);
+    const response = await gamesApi.get(`/games/${gameId}`);
     return {
       id: response.data.id,
       name: response.data.name,
@@ -83,37 +68,19 @@ export const getGameDetails = async (gameId) => {
       first_release_date: response.data.first_release_date
     };
   } catch (error) {
-    console.error('Game details API error:', error);
-    // Return a mock game if the backend is unavailable
-    const mockGame = MOCK_GAMES.find(game => game.id === parseInt(gameId));
-    
-    if (mockGame) {
-      return {
-        ...mockGame,
-        summary: 'This is a placeholder summary for the selected game. The actual game details are not available because the backend server could not be reached.',
-        genres: [{ id: 1, name: 'RPG' }, { id: 2, name: 'Action' }],
-        platforms: [{ id: 1, name: 'PC' }, { id: 2, name: 'PlayStation 5' }, { id: 3, name: 'Xbox Series X' }],
-        screenshots: []
-      };
-    }
-    
-    return {
-      id: parseInt(gameId),
-      name: 'Game Details',
-      summary: 'This is a placeholder summary because the backend is unavailable.',
-      genres: [{ id: 1, name: 'RPG' }],
-      platforms: [{ id: 1, name: 'PC' }],
-      cover: { url: 'https://images.igdb.com/igdb/image/upload/t_cover_big/co1q1f.jpg' },
-      screenshots: [],
-      rating: 90,
-      first_release_date: 1609459200
-    };
+    console.error('Error fetching game details:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch game details. Please try again later.');
   }
 };
 
+/**
+ * Get trending games
+ * @param {number} limit - Maximum number of results
+ * @returns {Promise<Array>} Array of trending game objects
+ */
 export const getTrendingGames = async (limit = 5) => {
   try {
-    const response = await axios.get(`${API_BASE}/games/trending`, {
+    const response = await gamesApi.get('/games/trending', {
       params: { limit }
     });
     return response.data.map(game => ({
@@ -124,8 +91,7 @@ export const getTrendingGames = async (limit = 5) => {
       rating: game.rating
     }));
   } catch (error) {
-    console.error('Trending API error:', error);
-    console.log('Using mock data instead');
-    return MOCK_GAMES.slice(0, limit);
+    console.error('Error fetching trending games:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch trending games. Please try again later.');
   }
 };

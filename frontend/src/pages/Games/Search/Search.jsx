@@ -44,7 +44,7 @@ const Search = () => {
         const results = await searchGames(debouncedSearchQuery);
         setGames(results);
         
-        // Save to recent searches if query is new
+        // Save to recent searches if query is new and results are found
         if (debouncedSearchQuery && results.length > 0) {
           setRecentSearches(prev => {
             // Remove duplicate if exists
@@ -57,7 +57,8 @@ const Search = () => {
           });
         }
       } catch (err) {
-        setError(err.message);
+        console.error('Search failed:', err);
+        setError(err.message || 'Failed to search games. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -84,6 +85,23 @@ const Search = () => {
   const clearRecentSearches = () => {
     setRecentSearches([]);
     localStorage.removeItem('recentSearches');
+  };
+
+  // Handle retry search on error
+  const handleRetry = () => {
+    if (debouncedSearchQuery) {
+      setError(null);
+      setLoading(true);
+      searchGames(debouncedSearchQuery)
+        .then(results => {
+          setGames(results);
+          setLoading(false);
+        })
+        .catch(err => {
+          setError(err.message || 'Failed to search games. Please try again.');
+          setLoading(false);
+        });
+    }
   };
 
   return (
@@ -179,7 +197,7 @@ const Search = () => {
           <div className="results-header">
             <h2>Results for "{debouncedSearchQuery}"</h2>
             <div className="results-count">
-              {games.length} games found
+              {!loading && !error ? `${games.length} games found` : ''}
             </div>
           </div>
           
@@ -190,13 +208,27 @@ const Search = () => {
             </div>
           ) : error ? (
             <div className="search-error">
-              <p>Error: {error}</p>
-              <Button onClick={() => window.location.reload()}>Try Again</Button>
+              <p>{error}</p>
+              <p className="error-details">
+                This might be due to a connection issue with the IGDB API.
+              </p>
+              <div className="error-actions">
+                <Button onClick={handleRetry}>Try Again</Button>
+                <Button variant="secondary" onClick={() => window.location.reload()}>
+                  Reload Page
+                </Button>
+              </div>
             </div>
           ) : games.length > 0 ? (
             <div className="games-grid">
               {games.map(game => (
-                <GameCard key={game.id} game={game} />
+                <Link 
+                  key={game.id} 
+                  to={`/games/${game.id}`}
+                  className="game-card-link"
+                >
+                  <GameCard game={game} />
+                </Link>
               ))}
             </div>
           ) : (
