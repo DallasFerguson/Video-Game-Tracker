@@ -6,7 +6,7 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/ap
 
 // Configure axios instance with proper error handling
 const gamesApi = axios.create({
-  baseURL: API_BASE,
+  baseURL: 'http://localhost:3001/api',
   timeout: 10000, // 10 second timeout
   headers: {
     'Content-Type': 'application/json'
