@@ -140,13 +140,11 @@ exports.getTrendingGames = async (limit = 5) => {
 };
 
 // For debugging
-if (process.env.NODE_ENV !== 'production') {
-  exports.testConnection = async () => {
-    try {
-      const token = await getAccessToken();
-      return { success: true, token_obtained: !!token };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
-}
+exports.testConnection = async () => {
+  try {
+    const token = await getAccessToken();
+    return { success: true, token_obtained: !!token };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
