@@ -31,12 +31,6 @@ Goal:
 
   Write and share reviews for games.
 
-  Rate games on a numerical or star-based scale.
-
-  View community-driven rankings of top-rated games.
-
-  Try to remove bloat of other versions of games
-
 The target demographic includes:
 
   Enthusiasts: Users interested in discovering new games based on community reviews.
