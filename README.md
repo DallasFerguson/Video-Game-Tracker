@@ -44,5 +44,3 @@ Data:
   Primary Data Source: IGDB API (for game details such as title, description, release date, genre, etc.).
 
   User-Generated Data: Reviews and ratings submitted by users.
-
-  Database: MongoDB will store user accounts, reviews, and ratings.
