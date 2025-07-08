@@ -1,25 +1,13 @@
 // src/api/games.js
 import axios from 'axios';
 
-// Use the proper API base URL from environment variables with fallback
-const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api';
-
 // Configure axios instance with proper error handling
 const gamesApi = axios.create({
-  baseURL: 'http://localhost:3001/api',
+  baseURL: 'http://localhost:3002/api', // Updated to port 3002
   timeout: 10000, // 10 second timeout
   headers: {
     'Content-Type': 'application/json'
   }
-});
-
-// Add request interceptor to include auth token when available
-gamesApi.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
 });
 
 /**
@@ -43,7 +31,6 @@ export const searchGames = async (query, limit = 10) => {
     }));
   } catch (error) {
     console.error('Error searching games:', error);
-    // Instead of falling back to mock data, throw the error to be handled by the component
     throw new Error(error.response?.data?.message || 'Failed to search games. Please try again later.');
   }
 };

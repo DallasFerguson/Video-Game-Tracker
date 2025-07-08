@@ -1,6 +1,5 @@
-import { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../../../contexts/AuthContext';
-import { updateLibraryEntry } from '../../../api/library';
+import { useState, useContext } from 'react';
+import { LibraryContext } from '../../../contexts/LibraryContext';
 import Button from '../../ui/Button/Button';
 import './GameStatus.css';
 
@@ -12,16 +11,14 @@ const STATUS_OPTIONS = [
 ];
 
 const GameStatus = ({ gameId, initialStatus, onUpdate }) => {
-  const { user } = useContext(AuthContext);
+  const { updateInLibrary } = useContext(LibraryContext);
   const [status, setStatus] = useState(initialStatus);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleStatusChange = async (newStatus) => {
-    if (!user) return;
-    
     setIsUpdating(true);
     try {
-      await updateLibraryEntry(user.token, gameId, { status: newStatus });
+      await updateInLibrary(gameId, { status: newStatus });
       setStatus(newStatus);
       onUpdate?.(newStatus);
     } catch (error) {

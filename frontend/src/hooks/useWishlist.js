@@ -4,7 +4,7 @@ import { WishlistContext } from '../contexts/WishlistContext';
 const useWishlist = () => {
   const context = useContext(WishlistContext);
   
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useWishlist must be used within a WishlistProvider');
   }
 

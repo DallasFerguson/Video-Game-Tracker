@@ -1,8 +1,7 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../../contexts/AuthContext';
-import { LibraryContext } from '../../contexts/LibraryContext';
-import { WishlistContext } from '../../contexts/WishlistContext';
+import useLibrary from '../../hooks/useLibrary';
+import useWishlist from '../../hooks/useWishlist';
 import GameCard from '../../components/games/GameCard/GameCard';
 import Button from '../../components/ui/Button/Button';
 import LoadingSpinner from '../../components/ui/LoadingSpinner/LoadingSpinner';
@@ -10,9 +9,8 @@ import { getTrendingGames } from '../../api/games';
 import './Home.css';
 
 export default function Home() {
-  const { user } = useContext(AuthContext);
-  const { library } = useContext(LibraryContext);
-  const { wishlist } = useContext(WishlistContext);
+  const { library } = useLibrary();
+  const { wishlist } = useWishlist();
   const [trendingGames, setTrendingGames] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,13 +30,13 @@ export default function Home() {
     fetchTrendingGames();
   }, []);
 
-  // Calculate user stats if logged in
-  const userStats = user ? {
+  // Calculate user stats
+  const stats = {
     totalGames: library.length,
     playing: library.filter(game => game.status === 'playing').length,
     completed: library.filter(game => game.status === 'completed').length,
     wishlist: wishlist.length
-  } : null;
+  };
 
   return (
     <div className="home-page">
@@ -53,52 +51,39 @@ export default function Home() {
           <p className="hero-subtitle">
             Manage your game collection, track progress, and discover new games
           </p>
-          {!user ? (
-            <div className="hero-cta">
-              <Link to="/register">
-                <Button variant="primary" size="large">Get Started</Button>
-              </Link>
-              <Link to="/login">
-                <Button variant="outline" size="large">Login</Button>
-              </Link>
-            </div>
-          ) : (
-            <div className="hero-cta">
-              <Link to="/library">
-                <Button variant="primary" size="large">My Library</Button>
-              </Link>
-              <Link to="/search">
-                <Button variant="secondary" size="large">Find Games</Button>
-              </Link>
-            </div>
-          )}
+          <div className="hero-cta">
+            <Link to="/library">
+              <Button variant="primary" size="large">My Library</Button>
+            </Link>
+            <Link to="/search">
+              <Button variant="secondary" size="large">Find Games</Button>
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* User Stats Section (if logged in) */}
-      {user && userStats && (
-        <section className="stats-section">
-          <h2>Your Gaming Stats</h2>
-          <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-value">{userStats.totalGames}</div>
-              <div className="stat-label">Games in Library</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">{userStats.playing}</div>
-              <div className="stat-label">Currently Playing</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">{userStats.completed}</div>
-              <div className="stat-label">Completed</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">{userStats.wishlist}</div>
-              <div className="stat-label">In Wishlist</div>
-            </div>
+      {/* User Stats Section */}
+      <section className="stats-section">
+        <h2>Your Gaming Stats</h2>
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-value">{stats.totalGames}</div>
+            <div className="stat-label">Games in Library</div>
           </div>
-        </section>
-      )}
+          <div className="stat-card">
+            <div className="stat-value">{stats.playing}</div>
+            <div className="stat-label">Currently Playing</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-value">{stats.completed}</div>
+            <div className="stat-label">Completed</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-value">{stats.wishlist}</div>
+            <div className="stat-label">In Wishlist</div>
+          </div>
+        </div>
+      </section>
 
       {/* Trending Games Section */}
       <section className="trending-section">
@@ -116,7 +101,9 @@ export default function Home() {
         ) : (
           <div className="games-grid">
             {trendingGames.map(game => (
-              <GameCard key={game.id} game={game} />
+              <Link key={game.id} to={`/games/${game.id}`}>
+                <GameCard game={game} />
+              </Link>
             ))}
           </div>
         )}
@@ -139,7 +126,7 @@ export default function Home() {
           <div className="feature-card">
             <div className="feature-icon">⭐</div>
             <h3>Rate & Review</h3>
-            <p>Share your thoughts and see what others think about games</p>
+            <p>Record your thoughts and ratings about the games you play</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">🔍</div>
@@ -148,17 +135,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Call to Action */}
-      {!user && (
-        <section className="cta-section">
-          <h2>Ready to Start Tracking?</h2>
-          <p>Join GameTracker today and never lose track of your gaming journey</p>
-          <Link to="/register">
-            <Button variant="primary" size="large">Create Account</Button>
-          </Link>
-        </section>
-      )}
     </div>
   );
 }

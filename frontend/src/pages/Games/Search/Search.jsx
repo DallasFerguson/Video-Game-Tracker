@@ -4,6 +4,7 @@ import { searchGames } from '../../../api/games';
 import GameCard from '../../../components/games/GameCard/GameCard';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner/LoadingSpinner';
 import Button from '../../../components/ui/Button/Button';
+import { getSearchHistory, saveSearchHistory } from '../../../utils/localStorageUtils';
 import useDebounce from '../../../hooks/useDebounce';
 import './Search.css';
 
@@ -13,10 +14,7 @@ const Search = () => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [recentSearches, setRecentSearches] = useState(() => {
-    const saved = localStorage.getItem('recentSearches');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [recentSearches, setRecentSearches] = useState(getSearchHistory());
   const searchInputRef = useRef(null);
   
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -46,15 +44,16 @@ const Search = () => {
         
         // Save to recent searches if query is new and results are found
         if (debouncedSearchQuery && results.length > 0) {
-          setRecentSearches(prev => {
-            // Remove duplicate if exists
-            const filtered = prev.filter(item => item !== debouncedSearchQuery);
-            // Add to beginning of array and limit to 5 items
-            const updated = [debouncedSearchQuery, ...filtered].slice(0, 5);
-            // Save to localStorage
-            localStorage.setItem('recentSearches', JSON.stringify(updated));
-            return updated;
-          });
+          const updatedSearches = recentSearches.filter(item => 
+            item.toLowerCase() !== debouncedSearchQuery.toLowerCase()
+          );
+          
+          // Add to beginning of array and limit to 5 items
+          updatedSearches.unshift(debouncedSearchQuery);
+          const limitedSearches = updatedSearches.slice(0, 5);
+          
+          setRecentSearches(limitedSearches);
+          saveSearchHistory(limitedSearches);
         }
       } catch (err) {
         console.error('Search failed:', err);
@@ -65,7 +64,7 @@ const Search = () => {
     };
 
     fetchGames();
-  }, [debouncedSearchQuery]);
+  }, [debouncedSearchQuery, recentSearches]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -84,7 +83,7 @@ const Search = () => {
 
   const clearRecentSearches = () => {
     setRecentSearches([]);
-    localStorage.removeItem('recentSearches');
+    saveSearchHistory([]);
   };
 
   // Handle retry search on error
@@ -227,7 +226,7 @@ const Search = () => {
                   to={`/games/${game.id}`}
                   className="game-card-link"
                 >
-                  <GameCard game={game} />
+                  <GameCard game={game} showActions={false} />
                 </Link>
               ))}
             </div>

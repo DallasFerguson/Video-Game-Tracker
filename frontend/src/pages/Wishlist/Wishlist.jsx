@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import useWishlist from '../../hooks/useWishlist';
-import GameList from '../../components/games/GameList/GameList';
+import { useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { WishlistContext } from '../../contexts/WishlistContext';
+import { LibraryContext } from '../../contexts/LibraryContext';
+import Button from '../../components/ui/Button/Button';
 import LoadingSpinner from '../../components/ui/LoadingSpinner/LoadingSpinner';
 import './Wishlist.css';
 
 const Wishlist = () => {
-  const [searchParams] = useSearchParams();
-  const { wishlist, loading, error, removeFromWishlist } = useWishlist();
+  const { wishlist, loading, error, removeFromWishlist } = useContext(WishlistContext);
+  const { addToLibrary } = useContext(LibraryContext);
   const [searchTerm, setSearchTerm] = useState('');
-  const sortBy = searchParams.get('sort') || 'recent';
+  const [sortBy, setSortBy] = useState('recent');
 
   // Filter by search term
   const filteredGames = wishlist.filter(game => 
@@ -21,22 +22,29 @@ const Wishlist = () => {
     switch (sortBy) {
       case 'name':
         return a.name.localeCompare(b.name);
-      case 'rating':
-        return (b.rating || 0) - (a.rating || 0);
-      case 'release':
-        return (b.first_release_date || 0) - (a.first_release_date || 0);
       case 'recent':
       default:
-        return new Date(b.addedDate) - new Date(a.addedDate);
+        return new Date(b.addedDate || 0) - new Date(a.addedDate || 0);
     }
   });
 
-  const handleRemoveFromWishlist = async (gameId) => {
-    try {
-      await removeFromWishlist(gameId);
-    } catch (err) {
-      console.error('Failed to remove from wishlist:', err);
+  const handleRemoveFromWishlist = (gameId) => {
+    if (window.confirm('Remove game from wishlist?')) {
+      removeFromWishlist(gameId);
     }
+  };
+
+  const handleMoveToLibrary = (game) => {
+    // First add to library
+    addToLibrary({
+      gameId: game.gameId,
+      name: game.name,
+      cover: game.cover,
+      status: 'plan_to_play'
+    });
+    
+    // Then remove from wishlist
+    removeFromWishlist(game.gameId);
   };
 
   if (loading) {
@@ -72,22 +80,53 @@ const Wishlist = () => {
         />
         <select
           value={sortBy}
-          onChange={(e) => searchParams.set('sort', e.target.value)}
+          onChange={(e) => setSortBy(e.target.value)}
           className="wishlist-sort"
         >
           <option value="recent">Recently Added</option>
           <option value="name">Name (A-Z)</option>
-          <option value="rating">Highest Rated</option>
-          <option value="release">Release Date</option>
         </select>
       </div>
 
       {sortedGames.length > 0 ? (
-        <GameList 
-          games={sortedGames} 
-          showActions={true}
-          onRemoveFromWishlist={handleRemoveFromWishlist}
-        />
+        <div className="wishlist-items">
+          {sortedGames.map(game => (
+            <div key={game.gameId} className="wishlist-item">
+              <div className="wishlist-item-cover">
+                <img 
+                  src={game.cover || '/assets/images/placeholders/game-cover-placeholder.jpg'} 
+                  alt={game.name}
+                  onError={(e) => {
+                    e.target.onerror = null; 
+                    e.target.src = '/assets/images/placeholders/game-cover-placeholder.jpg';
+                  }}
+                />
+              </div>
+              <div className="wishlist-item-details">
+                <Link to={`/games/${game.gameId}`} className="wishlist-item-title">
+                  {game.name}
+                </Link>
+                <div className="wishlist-item-date">
+                  Added: {game.addedDate ? new Date(game.addedDate).toLocaleDateString() : 'Unknown'}
+                </div>
+                <div className="wishlist-item-actions">
+                  <Button 
+                    variant="primary" 
+                    onClick={() => handleMoveToLibrary(game)}
+                  >
+                    Move to Library
+                  </Button>
+                  <Button 
+                    variant="danger"
+                    onClick={() => handleRemoveFromWishlist(game.gameId)}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="wishlist-empty">
           {searchTerm ? (
@@ -103,9 +142,9 @@ const Wishlist = () => {
           ) : (
             <>
               <p>Your wishlist is empty</p>
-              <a href="/search" className="wishlist-browse">
+              <Link to="/search" className="wishlist-browse">
                 Browse games to add
-              </a>
+              </Link>
             </>
           )}
         </div>

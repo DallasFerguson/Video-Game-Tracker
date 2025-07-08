@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getGameDetails } from '../../../api/games';
-import useLibrary from '../../../hooks/useLibrary';
-import useWishlist from '../../../hooks/useWishlist';
-import useNotification from '../../../hooks/useNotification';
+import { LibraryContext } from '../../../contexts/LibraryContext';
+import { WishlistContext } from '../../../contexts/WishlistContext';
+import { NotificationContext } from '../../../contexts/NotificationContext';
 import GameStatus from '../../../components/games/GameStatus/GameStatus';
 import Button from '../../../components/ui/Button/Button';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner/LoadingSpinner';
@@ -12,13 +12,14 @@ import './GameDetail.css';
 const GameDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { notify } = useNotification();
-  const { library, addToLibrary, updateInLibrary } = useLibrary();
-  const { wishlist, addToWishlist } = useWishlist();
+  const { library, addToLibrary, updateInLibrary } = useContext(LibraryContext);
+  const { wishlist, addToWishlist } = useContext(WishlistContext);
+  const { notify } = useContext(NotificationContext);
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Find this game in library or wishlist if it exists
   const libraryEntry = library.find(item => item.gameId === parseInt(id));
   const isInWishlist = wishlist.some(item => item.gameId === parseInt(id));
 
@@ -29,8 +30,8 @@ const GameDetail = () => {
         const gameData = await getGameDetails(id);
         setGame(gameData);
       } catch (err) {
-        setError(err.message);
-        notify('Failed to load game details', 'error');
+        setError(err.message || 'Failed to load game details');
+        notify?.('Failed to load game details', 'error');
       } finally {
         setLoading(false);
       }
@@ -39,32 +40,36 @@ const GameDetail = () => {
     fetchGameDetails();
   }, [id, notify]);
 
-  const handleAddToLibrary = async (status = 'plan_to_play') => {
+  const handleAddToLibrary = (status = 'plan_to_play') => {
     try {
-      await addToLibrary({
-        gameId: game.id,
+      // Prepare game data for library
+      const gameData = {
+        gameId: parseInt(id),
         name: game.name,
-        cover: game.cover.url,
+        cover: game.cover?.url ? `https:${game.cover.url.replace('t_thumb', 't_cover_big')}` : null,
         status,
         rating: 0,
         playtime: 0
-      });
-      notify('Game added to your library', 'success');
+      };
+      
+      addToLibrary(gameData);
     } catch (err) {
-      notify(err.message, 'error');
+      notify?.('Failed to add game to library', 'error');
     }
   };
 
-  const handleAddToWishlist = async () => {
+  const handleAddToWishlist = () => {
     try {
-      await addToWishlist({
-        gameId: game.id,
+      // Prepare game data for wishlist
+      const gameData = {
+        gameId: parseInt(id),
         name: game.name,
-        cover: game.cover.url
-      });
-      notify('Game added to wishlist', 'success');
+        cover: game.cover?.url ? `https:${game.cover.url.replace('t_thumb', 't_cover_big')}` : null
+      };
+      
+      addToWishlist(gameData);
     } catch (err) {
-      notify(err.message, 'error');
+      notify?.('Failed to add game to wishlist', 'error');
     }
   };
 
@@ -98,10 +103,14 @@ const GameDetail = () => {
     <div className="game-detail">
       <div className="game-header">
         <div className="game-cover">
-          <img 
-            src={`https:${game.cover.url.replace('t_thumb', 't_cover_big')}`} 
-            alt={game.name} 
-          />
+          {game.cover ? (
+            <img 
+              src={`https:${game.cover.url.replace('t_thumb', 't_cover_big')}`} 
+              alt={game.name} 
+            />
+          ) : (
+            <div className="game-no-cover">No Cover Available</div>
+          )}
         </div>
 
         <div className="game-info">
@@ -128,9 +137,12 @@ const GameDetail = () => {
           <div className="game-actions">
             {libraryEntry ? (
               <GameStatus 
-                gameId={game.id} 
+                gameId={parseInt(id)} 
                 initialStatus={libraryEntry.status}
-                onUpdate={() => notify('Status updated', 'success')}
+                onUpdate={(newStatus) => {
+                  updateInLibrary(parseInt(id), { status: newStatus });
+                  notify?.('Status updated', 'success');
+                }}
               />
             ) : (
               <Button 
@@ -141,14 +153,20 @@ const GameDetail = () => {
               </Button>
             )}
 
-            {!isInWishlist && (
+            {!isInWishlist && !libraryEntry && (
               <Button 
                 variant="secondary" 
                 onClick={handleAddToWishlist}
               >
-                Wishlist
+                Add to Wishlist
               </Button>
             )}
+
+            <Link to={`/games/${id}/reviews`}>
+              <Button variant="outline">
+                Reviews
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

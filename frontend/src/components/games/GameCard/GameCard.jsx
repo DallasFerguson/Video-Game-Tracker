@@ -1,12 +1,13 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../../../contexts/AuthContext';
-import { addToLibrary, addToWishlist } from '../../../api';
+import { LibraryContext } from '../../../contexts/LibraryContext';
+import { WishlistContext } from '../../../contexts/WishlistContext';
 import Button from '../../ui/Button/Button';
 import './GameCard.css';
 
 const GameCard = ({ game, showActions = true }) => {
-  const { user } = useContext(AuthContext);
+  const { addToLibrary } = useContext(LibraryContext);
+  const { addToWishlist } = useContext(WishlistContext);
 
   // Format game cover URL correctly
   const getCoverUrl = (cover) => {
@@ -46,34 +47,28 @@ const GameCard = ({ game, showActions = true }) => {
     return Math.round(rating * 10) / 10;
   };
 
-  const handleAddToLibrary = async (status) => {
-    if (!user) return;
-    
+  const handleAddToLibrary = (status) => {
     try {
-      await addToLibrary(user.token, {
+      addToLibrary({
         gameId: game.id,
         name: game.name,
         cover: getCoverUrl(game.cover),
         status
       });
-      alert(`${game.name} added to your library as ${status.replace('_', ' ')}`);
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      console.error('Failed to add to library:', error);
     }
   };
 
-  const handleAddToWishlist = async () => {
-    if (!user) return;
-    
+  const handleAddToWishlist = () => {
     try {
-      await addToWishlist(user.token, { 
+      addToWishlist({ 
         gameId: game.id,
         name: game.name,
         cover: getCoverUrl(game.cover)
       });
-      alert(`${game.name} added to wishlist!`);
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      console.error('Failed to add to wishlist:', error);
     }
   };
 
@@ -104,7 +99,7 @@ const GameCard = ({ game, showActions = true }) => {
           )}
         </div>
         
-        {showActions && user && (
+        {showActions && (
           <div className="game-card-actions">
             <Button 
               variant="secondary" 

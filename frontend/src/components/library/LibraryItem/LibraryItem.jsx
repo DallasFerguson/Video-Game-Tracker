@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { updateLibraryEntry, removeFromLibrary } from '../../../api/library';
+import { useState, useContext } from 'react';
+import { LibraryContext } from '../../../contexts/LibraryContext';
 import GameStatus from '../../games/GameStatus/GameStatus';
 import Button from '../../ui/Button/Button';
 import './LibraryItem.css';
 
 const LibraryItem = ({ game, onUpdate, onRemove }) => {
+  const { updateInLibrary, removeFromLibrary } = useContext(LibraryContext);
   const [isEditing, setIsEditing] = useState(false);
   const [playtime, setPlaytime] = useState(game.playtime || 0);
   const [rating, setRating] = useState(game.rating || 0);
@@ -13,8 +14,7 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await updateLibraryEntry(
-        localStorage.getItem('token'),
+      await updateInLibrary(
         game.gameId, 
         { playtime, rating }
       );
@@ -31,10 +31,7 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
     if (window.confirm(`Remove ${game.name} from your library?`)) {
       setIsLoading(true);
       try {
-        await removeFromLibrary(
-          localStorage.getItem('token'),
-          game.gameId
-        );
+        await removeFromLibrary(game.gameId);
         onRemove?.(game.gameId);
       } catch (error) {
         console.error('Remove failed:', error);
@@ -50,6 +47,10 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
         <img 
           src={game.cover || '/assets/images/placeholders/game-cover-placeholder.jpg'} 
           alt={game.name} 
+          onError={(e) => {
+            e.target.onerror = null; 
+            e.target.src = '/assets/images/placeholders/game-cover-placeholder.jpg';
+          }}
         />
       </div>
 
@@ -78,7 +79,7 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
               <label>Rating (1-10)</label>
               <input
                 type="number"
-                min="1"
+                min="0"
                 max="10"
                 value={rating}
                 onChange={(e) => setRating(parseInt(e.target.value) || 0)}
@@ -105,11 +106,17 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
           <div className="library-item-info">
             <div className="library-item-stat">
               <span className="stat-label">Playtime:</span>
-              <span className="stat-value">{playtime} hours</span>
+              <span className="stat-value">{game.playtime || 0} hours</span>
             </div>
             <div className="library-item-stat">
               <span className="stat-label">Rating:</span>
-              <span className="stat-value">{rating}/10</span>
+              <span className="stat-value">{game.rating || 0}/10</span>
+            </div>
+            <div className="library-item-stat">
+              <span className="stat-label">Added:</span>
+              <span className="stat-value">
+                {game.addedDate ? new Date(game.addedDate).toLocaleDateString() : 'Unknown'}
+              </span>
             </div>
 
             <div className="library-item-actions">

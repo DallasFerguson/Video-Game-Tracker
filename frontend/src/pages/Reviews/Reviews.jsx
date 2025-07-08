@@ -1,75 +1,64 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { getGameDetails } from '../../api/games';
-import { getGameReviews, submitReview, deleteReview } from '../../api/reviews';
+import { ReviewContext } from '../../contexts/ReviewContext';
 import ReviewForm from '../../components/reviews/ReviewForm/ReviewForm';
 import ReviewList from '../../components/reviews/ReviewList/ReviewList';
-import useAuth from '../../hooks/useAuth';
 import LoadingSpinner from '../../components/ui/LoadingSpinner/LoadingSpinner';
+import Button from '../../components/ui/Button/Button';
 import './Reviews.css';
 
 const Reviews = () => {
   const { id: gameId } = useParams();
-  const { user } = useAuth();
+  const { reviews, getGameReviews, addReview, deleteReview } = useContext(ReviewContext);
   const [game, setGame] = useState(null);
-  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editingReview, setEditingReview] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Get reviews for this specific game
+  const gameReviews = getGameReviews ? getGameReviews(parseInt(gameId)) : [];
+  
+  // In a personal tracker, there's only one review per game (your own)
+  const personalReview = gameReviews.length > 0 ? gameReviews[0] : null;
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchGameDetails = async () => {
       try {
         setLoading(true);
-        const [gameData, reviewsData] = await Promise.all([
-          getGameDetails(gameId),
-          getGameReviews(gameId)
-        ]);
+        const gameData = await getGameDetails(gameId);
         setGame(gameData);
-        setReviews(reviewsData);
       } catch (err) {
-        setError(err.message);
+        setError(err.message || 'Failed to load game details');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchGameDetails();
   }, [gameId]);
 
-  const handleSubmitReview = async (reviewData) => {
+  const handleSubmitReview = (reviewData) => {
     try {
-      const newReview = await submitReview(
-        localStorage.getItem('token'),
-        gameId,
-        { rating: reviewData.rating, review: reviewData.content }
-      );
-      
-      if (editingReview) {
-        setReviews(reviews.map(review => 
-          review.userId === user.id ? newReview : review
-        ));
-      } else {
-        setReviews([newReview, ...reviews]);
+      addReview(parseInt(gameId), {
+        rating: reviewData.rating,
+        review: reviewData.content
+      });
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Failed to submit review:', err);
+    }
+  };
+
+  const handleDeleteReview = () => {
+    if (window.confirm('Are you sure you want to delete this review?')) {
+      try {
+        deleteReview(parseInt(gameId));
+      } catch (err) {
+        console.error('Failed to delete review:', err);
       }
-      
-      setEditingReview(null);
-    } catch (err) {
-      setError(err.message);
     }
   };
-
-  const handleDeleteReview = async () => {
-    try {
-      await deleteReview(localStorage.getItem('token'), gameId);
-      setReviews(reviews.filter(review => review.userId !== user?.id));
-      setEditingReview(null);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const currentUserReview = reviews.find(review => review.userId === user?.id);
 
   if (loading) {
     return (
@@ -82,7 +71,10 @@ const Reviews = () => {
   if (error) {
     return (
       <div className="reviews-error">
-        <p>Error loading reviews: {error}</p>
+        <p>Error: {error}</p>
+        <Link to={`/games/${gameId}`}>
+          <Button variant="primary">Back to Game</Button>
+        </Link>
       </div>
     );
   }
@@ -90,7 +82,10 @@ const Reviews = () => {
   return (
     <div className="reviews-page">
       <div className="reviews-header">
-        <h1>Reviews for {game?.name}</h1>
+        <Link to={`/games/${gameId}`} className="back-link">
+          <Button variant="outline">Back to Game</Button>
+        </Link>
+        <h1>Review for {game?.name}</h1>
         {game?.cover && (
           <img 
             src={`https:${game.cover.url.replace('t_thumb', 't_cover_small')}`} 
@@ -100,30 +95,81 @@ const Reviews = () => {
         )}
       </div>
 
-      {user && (
-        <div className="user-review-section">
-          <h2>{currentUserReview ? 'Your Review' : 'Write a Review'}</h2>
+      {isEditing || !personalReview ? (
+        <div className="review-form-section">
+          <h2>{personalReview ? 'Edit Your Review' : 'Write a Review'}</h2>
           <ReviewForm
-            gameId={gameId}
-            initialReview={editingReview || currentUserReview}
+            gameId={parseInt(gameId)}
+            initialReview={personalReview}
             onSuccess={handleSubmitReview}
-            onDelete={currentUserReview ? handleDeleteReview : null}
+            onCancel={() => setIsEditing(false)}
           />
+        </div>
+      ) : (
+        <div className="personal-review-section">
+          <div className="section-header">
+            <h2>Your Review</h2>
+            <div className="review-actions">
+              <Button 
+                variant="outline"
+                onClick={() => setIsEditing(true)}
+              >
+                Edit
+              </Button>
+              <Button 
+                variant="danger"
+                onClick={handleDeleteReview}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+          <div className="review-content">
+            <div className="review-meta">
+              <div className="review-rating">Rating: {personalReview.rating}/10</div>
+              <div className="review-date">
+                {new Date(personalReview.date).toLocaleDateString()}
+              </div>
+            </div>
+            <div className="review-text">{personalReview.review}</div>
+          </div>
         </div>
       )}
 
-      <div className="all-reviews-section">
-        <h2>Community Reviews</h2>
-        {reviews.length > 0 ? (
-          <ReviewList 
-            reviews={reviews.filter(review => review.userId !== user?.id)}
-            currentUserReview={currentUserReview}
-            onEdit={setEditingReview}
-            onDelete={handleDeleteReview}
-          />
-        ) : (
-          <p className="no-reviews">No community reviews yet.</p>
-        )}
+      <div className="game-info-section">
+        <h2>About the Game</h2>
+        <div className="game-info">
+          {game?.summary ? (
+            <p className="game-summary">{game.summary}</p>
+          ) : (
+            <p className="no-info">No description available.</p>
+          )}
+          
+          <div className="game-meta-info">
+            {game?.genres && game.genres.length > 0 && (
+              <div className="info-item">
+                <span className="info-label">Genres:</span>
+                <span className="info-value">{game.genres.map(g => g.name).join(', ')}</span>
+              </div>
+            )}
+            
+            {game?.platforms && game.platforms.length > 0 && (
+              <div className="info-item">
+                <span className="info-label">Platforms:</span>
+                <span className="info-value">{game.platforms.map(p => p.name).join(', ')}</span>
+              </div>
+            )}
+            
+            {game?.first_release_date && (
+              <div className="info-item">
+                <span className="info-label">Release Date:</span>
+                <span className="info-value">
+                  {new Date(game.first_release_date * 1000).toLocaleDateString()}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

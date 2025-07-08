@@ -1,11 +1,7 @@
 import { Link, NavLink } from 'react-router-dom';
-import { useContext } from 'react';
-import { AuthContext } from '../../../contexts/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
-  const { user, logout } = useContext(AuthContext);
-
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -38,37 +34,14 @@ const Navbar = () => {
           >
             Search Games
           </NavLink>
-        </div>
-
-        <div className="navbar-auth">
-          {user ? (
-            <>
-              <span className="navbar-username">{user.username}</span>
-              <button 
-                onClick={logout} 
-                className="navbar-logout"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <NavLink 
-                to="/login" 
-                className={({ isActive }) => 
-                  `navbar-link ${isActive ? 'active' : ''}`
-                }
-              >
-                Login
-              </NavLink>
-              <NavLink 
-                to="/register" 
-                className="navbar-link register"
-              >
-                Register
-              </NavLink>
-            </>
-          )}
+          <NavLink 
+            to="/trending" 
+            className={({ isActive }) => 
+              `navbar-link ${isActive ? 'active' : ''}`
+            }
+          >
+            Trending
+          </NavLink>
         </div>
       </div>
     </nav>
