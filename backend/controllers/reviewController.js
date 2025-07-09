@@ -2,7 +2,7 @@ const Review = require('../models/Review');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
 
-// Get reviews for a game
+//get reviews for a game
 exports.getGameReviews = async (req, res) => {
   const gameId = parseInt(req.params.gameId);
 
@@ -11,7 +11,7 @@ exports.getGameReviews = async (req, res) => {
       .populate('user', 'username')
       .sort({ date: -1 });
 
-    // Format reviews to include username
+    //format reviews to include username
     const formattedReviews = reviews.map(review => ({
       id: review._id,
       gameId: review.gameId,
@@ -29,7 +29,7 @@ exports.getGameReviews = async (req, res) => {
   }
 };
 
-// Get user's reviews
+//get user's reviews
 exports.getUserReviews = async (req, res) => {
   try {
     const reviews = await Review.find({ user: req.user.id })
@@ -42,9 +42,9 @@ exports.getUserReviews = async (req, res) => {
   }
 };
 
-// Submit/update review
+//submit/update review
 exports.submitReview = async (req, res) => {
-  // Validate request
+  //validate request
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -54,14 +54,14 @@ exports.submitReview = async (req, res) => {
   const gameId = parseInt(req.params.gameId);
 
   try {
-    // Check if review already exists
+    //check if review already exists
     let reviewEntry = await Review.findOne({
       user: req.user.id,
       gameId
     });
 
     if (reviewEntry) {
-      // Update existing review
+      //update existing review
       reviewEntry = await Review.findOneAndUpdate(
         { user: req.user.id, gameId },
         {
@@ -74,7 +74,7 @@ exports.submitReview = async (req, res) => {
         { new: true }
       );
     } else {
-      // Create new review
+      //create new review
       reviewEntry = new Review({
         user: req.user.id,
         gameId,
@@ -85,7 +85,7 @@ exports.submitReview = async (req, res) => {
       await reviewEntry.save();
     }
 
-    // Get user info to include in response
+    //get user info to include in response
     const user = await User.findById(req.user.id).select('username');
 
     res.json({
@@ -103,7 +103,7 @@ exports.submitReview = async (req, res) => {
   }
 };
 
-// Delete review
+//delete review
 exports.deleteReview = async (req, res) => {
   const gameId = parseInt(req.params.gameId);
 

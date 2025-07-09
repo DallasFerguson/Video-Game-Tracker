@@ -4,7 +4,7 @@ const { check } = require('express-validator');
 const wishlistController = require('../controllers/wishlistController');
 const auth = require('../middleware/auth');
 
-// Apply auth middleware to all routes
+//apply auth middleware to all routes
 router.use(auth);
 
 // @route   GET /api/wishlist

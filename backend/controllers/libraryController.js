@@ -1,7 +1,7 @@
 const LibraryEntry = require('../models/LibraryEntry');
 const { validationResult } = require('express-validator');
 
-// Get user's library
+//get user's library
 exports.getUserLibrary = async (req, res) => {
   try {
     const library = await LibraryEntry.find({ user: req.user.id });
@@ -12,9 +12,9 @@ exports.getUserLibrary = async (req, res) => {
   }
 };
 
-// Add game to library
+//add game to library
 exports.addToLibrary = async (req, res) => {
-  // Validate request
+  //validate request
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -23,7 +23,7 @@ exports.addToLibrary = async (req, res) => {
   const { gameId, name, cover, status = 'plan_to_play' } = req.body;
 
   try {
-    // Check if game already exists in library
+    //check if game already exists in library
     let libraryEntry = await LibraryEntry.findOne({
       user: req.user.id,
       gameId
@@ -33,7 +33,7 @@ exports.addToLibrary = async (req, res) => {
       return res.status(400).json({ message: 'Game already in library' });
     }
 
-    // Create new library entry
+    //create new library entry
     libraryEntry = new LibraryEntry({
       user: req.user.id,
       gameId,
@@ -51,9 +51,9 @@ exports.addToLibrary = async (req, res) => {
   }
 };
 
-// Update library entry
+//update library entry
 exports.updateLibraryEntry = async (req, res) => {
-  // Validate request
+  //validate request
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -63,13 +63,13 @@ exports.updateLibraryEntry = async (req, res) => {
   const gameId = parseInt(req.params.gameId);
 
   try {
-    // Build update object
+    //build update object
     const updateFields = { lastUpdated: Date.now() };
     if (status) updateFields.status = status;
     if (rating !== undefined) updateFields.rating = rating;
     if (playtime !== undefined) updateFields.playtime = playtime;
 
-    // Update library entry
+    //update library entry
     let libraryEntry = await LibraryEntry.findOneAndUpdate(
       { user: req.user.id, gameId },
       { $set: updateFields },
@@ -87,7 +87,7 @@ exports.updateLibraryEntry = async (req, res) => {
   }
 };
 
-// Remove from library
+//remove from library
 exports.removeFromLibrary = async (req, res) => {
   const gameId = parseInt(req.params.gameId);
 

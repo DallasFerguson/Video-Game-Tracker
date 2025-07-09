@@ -2,10 +2,10 @@
 const axios = require('axios');
 const NodeCache = require('node-cache');
 
-// Cache with TTL of 1 hour
+//cache with TTL of 1 hour
 const cache = new NodeCache({ stdTTL: 3600 });
 
-// IGDB API credentials from environment variables
+//IGDB API credentials from environment variables
 const clientId = process.env.IGDB_CLIENT_ID;
 const clientSecret = process.env.IGDB_CLIENT_SECRET;
 let accessToken = null;
@@ -16,7 +16,7 @@ let tokenExpiry = null;
  * @returns {Promise<string>} Access token
  */
 const getAccessToken = async () => {
-  // Check if token exists and is not expired
+  //check if token exists and is not expired
   if (accessToken && tokenExpiry && Date.now() < tokenExpiry) {
     return accessToken;
   }
@@ -32,7 +32,7 @@ const getAccessToken = async () => {
     );
 
     accessToken = response.data.access_token;
-    // Set expiry to slightly before actual expiry to ensure token is always valid
+    //set expiry to slightly before actual expiry to ensure token is always valid
     tokenExpiry = Date.now() + (response.data.expires_in * 1000) - 60000;
     console.log('Successfully obtained IGDB access token');
 
@@ -142,7 +142,7 @@ exports.getGameDetails = async (gameId) => {
  * @returns {Promise<Array>} Array of trending game objects
  */
 exports.getTrendingGames = async (limit = 5) => {
-  // Get games from the last 6 months with highest ratings
+  //get games from the last 6 months with highest ratings
   const sixMonthsAgo = Math.floor(Date.now() / 1000) - 15552000;
   
   const body = `
@@ -155,7 +155,7 @@ exports.getTrendingGames = async (limit = 5) => {
   return igdbRequest('/games', body);
 };
 
-// For debugging
+//for debugging
 exports.testConnection = async () => {
   try {
     const token = await getAccessToken();

@@ -9,7 +9,7 @@ const auth = require('../middleware/auth');
 // @access  Public
 router.get('/game/:gameId', reviewController.getGameReviews);
 
-// Apply auth middleware to protected routes
+//apply auth middleware to protected routes
 router.use(auth);
 
 // @route   GET /api/reviews

@@ -1,7 +1,7 @@
 const WishlistItem = require('../models/WishlistItem');
 const { validationResult } = require('express-validator');
 
-// Get user's wishlist
+//get user's wishlist
 exports.getWishlist = async (req, res) => {
   try {
     const wishlist = await WishlistItem.find({ user: req.user.id });
@@ -12,7 +12,7 @@ exports.getWishlist = async (req, res) => {
   }
 };
 
-// Add to wishlist
+//add to wishlist
 exports.addToWishlist = async (req, res) => {
   // Validate request
   const errors = validationResult(req);
@@ -23,7 +23,7 @@ exports.addToWishlist = async (req, res) => {
   const { gameId, name, cover } = req.body;
 
   try {
-    // Check if game already exists in wishlist
+    //check if game already exists in wishlist
     let wishlistItem = await WishlistItem.findOne({
       user: req.user.id,
       gameId
@@ -33,7 +33,7 @@ exports.addToWishlist = async (req, res) => {
       return res.status(400).json({ message: 'Game already in wishlist' });
     }
 
-    // Create new wishlist item
+    //create new wishlist item
     wishlistItem = new WishlistItem({
       user: req.user.id,
       gameId,
@@ -50,7 +50,7 @@ exports.addToWishlist = async (req, res) => {
   }
 };
 
-// Remove from wishlist
+//remove from wishlist
 exports.removeFromWishlist = async (req, res) => {
   const gameId = parseInt(req.params.gameId);
 

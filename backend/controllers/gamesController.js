@@ -1,6 +1,6 @@
 const igdbService = require('../middleware/igdbService');
 
-// Search games
+//search games
 exports.searchGames = async (req, res) => {
   const { query, limit = 10 } = req.query;
 
@@ -17,7 +17,7 @@ exports.searchGames = async (req, res) => {
   }
 };
 
-// Get game details
+//get game details
 exports.getGameDetails = async (req, res) => {
   const gameId = req.params.id;
 
@@ -35,7 +35,7 @@ exports.getGameDetails = async (req, res) => {
   }
 };
 
-// Get trending games
+//get trending games
 exports.getTrendingGames = async (req, res) => {
   const { limit = 5 } = req.query;
 

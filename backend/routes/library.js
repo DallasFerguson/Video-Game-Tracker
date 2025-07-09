@@ -4,7 +4,7 @@ const { check } = require('express-validator');
 const libraryController = require('../controllers/libraryController');
 const auth = require('../middleware/auth');
 
-// Apply auth middleware to all routes
+//apply auth middleware to all routes
 router.use(auth);
 
 // @route   GET /api/library
