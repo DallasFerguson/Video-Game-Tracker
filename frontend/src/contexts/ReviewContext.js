@@ -36,38 +36,38 @@ export const ReviewProvider = ({ children }) => {
 
   const addReview = useCallback((gameId, reviewData, gameDetails = null) => {
     try {
-      // Generate a unique ID for the review
+      //generate a unique ID for the review
       const reviewId = Date.now().toString();
       const parsedGameId = parseInt(gameId);
       
-      // Create new review object
+      //create new review object
       const newReview = {
         id: reviewId,
         gameId: parsedGameId,
-        username: 'Me',  // For personal use app
-        userId: 'personal',  // Static ID for personal use
+        username: 'Me',  //for personal use app
+        userId: 'personal',  //static ID for personal use
         rating: reviewData.rating,
         review: reviewData.review || reviewData.content,
         date: new Date().toISOString()
       };
       
-      // Check if a review for this game already exists
+      //check if a review for this game already exists
       const existingReviewIndex = reviews.findIndex(r => r.gameId === parsedGameId);
       
       let updatedReviews;
       if (existingReviewIndex !== -1) {
-        // Update existing review
+        //update existing review
         updatedReviews = [...reviews];
         updatedReviews[existingReviewIndex] = newReview;
       } else {
-        // Add new review
+        //add new review
         updatedReviews = [...reviews, newReview];
         
-        // Check if game is in library, if not, add it
+        //check if game is in library, if not, add it
         const isInLibrary = library.some(game => game.gameId === parsedGameId);
         
         if (!isInLibrary && gameDetails) {
-          // Add game to library with 'playing' status
+          //add game to library with 'playing' status
           addToLibrary({
             gameId: parsedGameId,
             name: gameDetails.name,

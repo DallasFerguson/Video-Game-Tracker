@@ -30,7 +30,7 @@ export default function Home() {
     fetchTrendingGames();
   }, []);
 
-  // Calculate user stats
+  //calculate user stats
   const stats = {
     totalGames: library.length,
     playing: library.filter(game => game.status === 'playing').length,
@@ -40,11 +40,11 @@ export default function Home() {
 
   return (
     <div className="home-page">
-      {/* Decorative elements */}
+      {/*Decorative elements*/}
       <div className="floating-controller">🎮</div>
       <div className="floating-controller">🕹️</div>
       
-      {/* Hero Section */}
+      {/*Hero Section*/}
       <section className="hero-section">
         <div className="hero-content">
           <h1>Track Your Gaming Journey</h1>
@@ -62,7 +62,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* User Stats Section */}
+      {/*User Stats Section*/}
       <section className="stats-section">
         <h2>Your Gaming Stats</h2>
         <div className="stats-grid">
@@ -85,7 +85,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trending Games Section */}
+      {/*Trending Games Section*/}
       <section className="trending-section">
         <div className="section-header">
           <h2>Trending Games</h2>
@@ -109,7 +109,7 @@ export default function Home() {
         )}
       </section>
 
-      {/* Features Section */}
+      {/*Features Section*/}
       <section className="features-section">
         <h2>Track Your Games Like Never Before</h2>
         <div className="features-grid">

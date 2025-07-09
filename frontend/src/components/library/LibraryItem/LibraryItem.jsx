@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LibraryContext } from '../../../contexts/LibraryContext';
 import { ReviewContext } from '../../../contexts/ReviewContext';
-import GameCover from '../../../components/games/GameCover/GameCover'; // Import the new component
+import GameCover from '../../../components/games/GameCover/GameCover';
 import GameStatus from '../../games/GameStatus/GameStatus';
 import Button from '../../ui/Button/Button';
 import RatingDisplay from '../../reviews/RatingDisplay/RatingDisplay';
@@ -16,7 +16,7 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [review, setReview] = useState(null);
 
-  // Fetch review for this game
+  //fetch review for this game
   useEffect(() => {
     if (getGameReviews) {
       const gameReviews = getGameReviews(game.gameId);
@@ -56,7 +56,7 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
     }
   };
 
-  // Determine display text for playtime
+  //determine display text for playtime
   const getPlaytimeDisplay = (hours) => {
     if (hours === 0) return "Not played yet";
     if (hours < 1) return "Less than 1 hour";
@@ -66,7 +66,7 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
   return (
     <div className="library-item">
       <div className="library-item-cover">
-        {/* Replace the img tag with GameCover component */}
+        {/*Replace the img tag with GameCover component*/}
         <GameCover 
           cover={game.cover}
           name={game.name}
@@ -126,7 +126,7 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
               </span>
             </div>
 
-            {/* Display review if it exists */}
+            {/*Display review if it exists*/}
             {review && (
               <div className="library-item-review">
                 <h4>Your Review</h4>
@@ -144,7 +144,7 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
               </div>
             )}
 
-            {/* Link to write a review if none exists */}
+            {/*Link to write a review if none exists*/}
             {!review && (
               <div className="library-item-no-review">
                 <Link to={`/games/${game.gameId}/reviews`} className="review-link">

@@ -12,12 +12,12 @@ const Wishlist = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('recent');
 
-  // Filter by search term
+  //filter by search term
   const filteredGames = wishlist.filter(game => 
     game.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Sort games
+  //sort games
   const sortedGames = [...filteredGames].sort((a, b) => {
     switch (sortBy) {
       case 'name':
@@ -35,7 +35,7 @@ const Wishlist = () => {
   };
 
   const handleMoveToLibrary = (game) => {
-    // First add to library
+    //first add to library
     addToLibrary({
       gameId: game.gameId,
       name: game.name,
@@ -43,7 +43,7 @@ const Wishlist = () => {
       status: 'plan_to_play'
     });
     
-    // Then remove from wishlist
+    //then remove from wishlist
     removeFromWishlist(game.gameId);
   };
 

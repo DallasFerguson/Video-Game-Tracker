@@ -20,12 +20,12 @@ const Search = () => {
   
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  // Load recent searches only once on component mount
+  //load recent searches only once on component mount
   useEffect(() => {
     setRecentSearches(getSearchHistory());
   }, []);
 
-  // Update URL when debounced search query changes
+  //update URL when debounced search query changes
   useEffect(() => {
     if (debouncedSearchQuery) {
       setSearchParams({ q: debouncedSearchQuery });
@@ -34,12 +34,12 @@ const Search = () => {
     }
   }, [debouncedSearchQuery, setSearchParams]);
 
-  // Fetch search results when debounced query changes
+  //fetch search results when debounced query changes
   useEffect(() => {
-    // Skip the initial mount to prevent unnecessary API calls
+    //skip the initial mount to prevent unnecessary API calls
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      // But still perform search if there's an initial query from URL
+      //but still perform search if there's an initial query from URL
       if (!debouncedSearchQuery) return;
     }
 
@@ -98,10 +98,10 @@ const Search = () => {
     saveSearchHistory([]);
   };
 
-  // Handle retry search on error
+  //handle retry search on error
   const handleRetry = () => {
     if (debouncedSearchQuery) {
-      // Force a re-render to trigger the useEffect again
+      //force a re-render to trigger the useEffect again
       setError(null);
       setLoading(true);
       

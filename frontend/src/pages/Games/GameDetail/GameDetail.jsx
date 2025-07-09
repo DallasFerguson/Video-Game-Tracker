@@ -41,16 +41,16 @@ const GameDetail = () => {
     fetchGameDetails();
   }, [id, notify]);
 
-  // Helper function to get proper cover URL for adding to library/wishlist
+  //helper function to get proper cover URL for adding to library/wishlist
   const getProcessedCoverUrl = (cover) => {
     if (!cover || !cover.url) return null;
     
-    // If image_id is available, use that
+    //if image_id is available, use that
     if (cover.image_id) {
       return `https://images.igdb.com/igdb/image/upload/t_cover_big/${cover.image_id}.jpg`;
     }
     
-    // Otherwise use url and try to get a better version
+    //otherwise use url and try to get a better version
     let url = cover.url;
     if (url.startsWith('//')) url = `https:${url}`;
     return url.replace('t_thumb', 't_cover_big');
@@ -58,7 +58,7 @@ const GameDetail = () => {
 
   const handleAddToLibrary = (status = 'plan_to_play') => {
     try {
-      // Prepare game data for library
+      //prepare game data for library
       const gameData = {
         gameId: parseInt(id),
         name: game.name,
@@ -76,7 +76,7 @@ const GameDetail = () => {
 
   const handleAddToWishlist = () => {
     try {
-      // Prepare game data for wishlist
+      //prepare game data for wishlist
       const gameData = {
         gameId: parseInt(id),
         name: game.name,
@@ -119,7 +119,7 @@ const GameDetail = () => {
     <div className="game-detail">
       <div className="game-header">
         <div className="game-cover-container">
-          {/* Use the new GameCover component instead of directly rendering an img tag */}
+          {/*Use the new GameCover component instead of directly rendering an img tag*/}
           <GameCover 
             cover={game.cover}
             name={game.name}

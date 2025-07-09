@@ -1,10 +1,10 @@
-// src/api/games.js
+//src/api/games.js
 import axios from 'axios';
 
-// Configure axios instance with proper error handling
+//configure axios instance with proper error handling
 const gamesApi = axios.create({
-  baseURL: 'http://localhost:3002/api', // Updated to port 3002
-  timeout: 10000, // 10 second timeout
+  baseURL: 'http://localhost:3002/api', //updated to port 3002
+  timeout: 10000, //10 second timeout
   headers: {
     'Content-Type': 'application/json'
   }

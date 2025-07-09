@@ -14,24 +14,21 @@ import Wishlist from './pages/Wishlist/Wishlist';
 import GameDetail from './pages/Games/GameDetail/GameDetail';
 import Search from './pages/Games/Search/Search';
 import Trending from './pages/Games/Trending/Trending';
-import Reviews from './pages/Reviews/Reviews'; // Make sure this import is correct
+import Reviews from './pages/Reviews/Reviews'; 
 import NotFound from './pages/NotFound/NotFound';
 import './App.css';
 
-// Double-check that the path to the Reviews component is correct
-// If your file structure is different, adjust the import path accordingly
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
     children: [
-      // All routes now public
       { index: true, element: <Home /> },
       { path: 'games/:id', element: <GameDetail /> },
       { path: 'search', element: <Search /> },
       { path: 'trending', element: <Trending /> },
-      { path: 'games/:id/reviews', element: <Reviews /> }, // Make sure this route is correct
+      { path: 'games/:id/reviews', element: <Reviews /> },
       { path: 'library', element: <Library /> },
       { path: 'wishlist', element: <Wishlist /> },
       

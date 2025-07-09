@@ -8,10 +8,10 @@ const ReviewList = ({ gameId, onUpdate, gameDetails }) => {
   const { reviews, getGameReviews } = useContext(ReviewContext);
   const [editingReview, setEditingReview] = useState(null);
   
-  // Get all reviews for this game
+  //get all reviews for this game
   const gameReviews = getGameReviews ? getGameReviews(parseInt(gameId)) : [];
   
-  // For a personal tracker, there's typically just one review per game (your own)
+  //for a personal tracker, there's typically just one review per game (your own)
   const currentUserReview = gameReviews.length > 0 ? gameReviews[0] : null;
 
   const handleReviewSubmit = () => {

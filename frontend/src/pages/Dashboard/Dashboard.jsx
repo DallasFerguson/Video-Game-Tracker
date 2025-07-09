@@ -10,7 +10,7 @@ const Dashboard = () => {
   const { library, loading: libraryLoading } = useLibrary();
   const { wishlist, loading: wishlistLoading } = useWishlist();
 
-  // Filter games by status for different sections
+  //filter games by status for different sections
   const currentlyPlaying = library.filter(game => game.status === 'playing');
   const recentlyAdded = [...library].sort((a, b) => new Date(b.addedDate) - new Date(a.addedDate)).slice(0, 5);
   const wishlistGames = wishlist.slice(0, 5);

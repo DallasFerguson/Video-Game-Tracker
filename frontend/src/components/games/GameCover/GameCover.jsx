@@ -5,23 +5,23 @@ const GameCover = ({ cover, name, size = 'medium' }) => {
   const getCoverUrl = (cover) => {
     if (!cover) return null;
     
-    // Handle different cover data structures
+    //handle different cover data structures
     if (typeof cover === 'string') {
       return cover.startsWith('http') ? cover : `https:${cover}`;
     }
     
     if (!cover.url && !cover.image_id) return null;
     
-    // If image_id is available, use that (preferred method)
+    //if image_id is available, use that (preferred method)
     if (cover.image_id) {
       return `https://images.igdb.com/igdb/image/upload/t_cover_big/${cover.image_id}.jpg`;
     }
     
-    // Otherwise use url and try to get a better version
+    //otherwise use url and try to get a better version
     let url = cover.url;
     if (url.startsWith('//')) url = `https:${url}`;
     
-    // Try to get higher resolution version
+    //try to get higher resolution version
     return url.replace('t_thumb', 't_cover_big');
   };
 

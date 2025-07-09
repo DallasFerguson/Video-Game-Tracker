@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { LibraryContext } from '../../../contexts/LibraryContext';
 import { WishlistContext } from '../../../contexts/WishlistContext';
-import GameCover from '../GameCover/GameCover'; // Import the new component
+import GameCover from '../GameCover/GameCover'; 
 import Button from '../../ui/Button/Button';
 import './GameCard.css';
 
@@ -10,22 +10,22 @@ const GameCard = ({ game, showActions = true }) => {
   const { addToLibrary } = useContext(LibraryContext);
   const { addToWishlist } = useContext(WishlistContext);
 
-  // Format game cover URL correctly for adding to library/wishlist
+  //format game cover URL correctly for adding to library/wishlist
   const getCoverUrl = (cover) => {
     if (!cover || !cover.url) return null;
     
-    // If the URL already starts with http or https, use it as is
+    //if the URL already starts with http or https, use it as is
     if (cover.url.startsWith('http')) return cover.url;
     
-    // If the URL starts with '//', add https:
+    //if the URL starts with '//', add https:
     if (cover.url.startsWith('//')) return `https:${cover.url}`;
     
-    // For IGDB image IDs
+    //for IGDB image IDs
     if (cover.image_id) {
       return `https://images.igdb.com/igdb/image/upload/t_cover_big/${cover.image_id}.jpg`;
     }
     
-    // Fallback for other URL formats
+    //fallback for other URL formats
     return `https:${cover.url.replace('t_thumb', 't_cover_big')}`;
   };
 
@@ -35,16 +35,16 @@ const GameCard = ({ game, showActions = true }) => {
     return new Date(timestamp * 1000).getFullYear();
   };
 
-  // Format rating to be out of 10
+  //format rating to be out of 10
   const formatRating = (rating) => {
     if (!rating) return null;
     
-    // IGDB ratings are typically on a scale of 100, so convert to scale of 10
+    //IGDB ratings are typically on a scale of 100, so convert to scale of 10
     if (rating > 10) {
       return Math.round(rating / 10);
     }
     
-    // If already on a scale of 10 or less, return as is
+    //if already on a scale of 10 or less, return as is
     return Math.round(rating * 10) / 10;
   };
 
