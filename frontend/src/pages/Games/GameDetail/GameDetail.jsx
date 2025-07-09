@@ -4,6 +4,7 @@ import { getGameDetails } from '../../../api/games';
 import { LibraryContext } from '../../../contexts/LibraryContext';
 import { WishlistContext } from '../../../contexts/WishlistContext';
 import { NotificationContext } from '../../../contexts/NotificationContext';
+import GameCover from '../../../components/games/GameCover/GameCover'; // Import the new component
 import GameStatus from '../../../components/games/GameStatus/GameStatus';
 import Button from '../../../components/ui/Button/Button';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner/LoadingSpinner';
@@ -40,13 +41,28 @@ const GameDetail = () => {
     fetchGameDetails();
   }, [id, notify]);
 
+  // Helper function to get proper cover URL for adding to library/wishlist
+  const getProcessedCoverUrl = (cover) => {
+    if (!cover || !cover.url) return null;
+    
+    // If image_id is available, use that
+    if (cover.image_id) {
+      return `https://images.igdb.com/igdb/image/upload/t_cover_big/${cover.image_id}.jpg`;
+    }
+    
+    // Otherwise use url and try to get a better version
+    let url = cover.url;
+    if (url.startsWith('//')) url = `https:${url}`;
+    return url.replace('t_thumb', 't_cover_big');
+  };
+
   const handleAddToLibrary = (status = 'plan_to_play') => {
     try {
       // Prepare game data for library
       const gameData = {
         gameId: parseInt(id),
         name: game.name,
-        cover: game.cover?.url ? `https:${game.cover.url.replace('t_thumb', 't_cover_big')}` : null,
+        cover: getProcessedCoverUrl(game.cover),
         status,
         rating: 0,
         playtime: 0
@@ -64,7 +80,7 @@ const GameDetail = () => {
       const gameData = {
         gameId: parseInt(id),
         name: game.name,
-        cover: game.cover?.url ? `https:${game.cover.url.replace('t_thumb', 't_cover_big')}` : null
+        cover: getProcessedCoverUrl(game.cover)
       };
       
       addToWishlist(gameData);
@@ -102,15 +118,13 @@ const GameDetail = () => {
   return (
     <div className="game-detail">
       <div className="game-header">
-        <div className="game-cover">
-          {game.cover ? (
-            <img 
-              src={`https:${game.cover.url.replace('t_thumb', 't_cover_big')}`} 
-              alt={game.name} 
-            />
-          ) : (
-            <div className="game-no-cover">No Cover Available</div>
-          )}
+        <div className="game-cover-container">
+          {/* Use the new GameCover component instead of directly rendering an img tag */}
+          <GameCover 
+            cover={game.cover}
+            name={game.name}
+            size="large"
+          />
         </div>
 
         <div className="game-info">

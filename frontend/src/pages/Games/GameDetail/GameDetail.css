@@ -26,17 +26,9 @@
   margin-bottom: var(--spacing-xl);
 }
 
-.game-cover {
+.game-cover-container {
   flex: 0 0 300px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-}
-
-.game-cover img {
-  width: 100%;
-  height: auto;
-  display: block;
+  /* Removed height constraints to allow the GameCover component to control the size */
 }
 
 .game-info {
@@ -123,10 +115,10 @@
     gap: var(--spacing-lg);
   }
 
-  .game-cover {
+  .game-cover-container {
     flex: 0 0 auto;
-    max-width: 300px;
-    margin: 0 auto;
+    display: flex;
+    justify-content: center;
   }
 
   .game-actions {

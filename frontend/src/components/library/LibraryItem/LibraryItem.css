@@ -10,15 +10,10 @@
 
 .library-item-cover {
   flex: 0 0 120px;
-  height: 160px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-
-.library-item-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  /* Let the GameCover component handle the height and display */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .library-item-details {
@@ -78,8 +73,7 @@
 
   .library-item-cover {
     width: 100%;
-    height: auto;
-    aspect-ratio: 2/3;
+    align-items: center;
+    justify-content: center;
   }
 }
-

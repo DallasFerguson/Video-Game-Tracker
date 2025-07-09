@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getGameDetails } from '../../api/games';
 import { ReviewContext } from '../../contexts/ReviewContext';
+import GameCover from '../../components/games/GameCover/GameCover'; // Import the new component
 import ReviewForm from '../../components/reviews/ReviewForm/ReviewForm';
 import ReviewList from '../../components/reviews/ReviewList/ReviewList';
 import LoadingSpinner from '../../components/ui/LoadingSpinner/LoadingSpinner';
@@ -87,11 +88,14 @@ const Reviews = () => {
         </Link>
         <h1>Review for {game?.name}</h1>
         {game?.cover && (
-          <img 
-            src={`https:${game.cover.url.replace('t_thumb', 't_cover_small')}`} 
-            alt={game.name} 
-            className="game-cover"
-          />
+          <div className="reviews-game-cover">
+            {/* Use the new GameCover component */}
+            <GameCover 
+              cover={game.cover}
+              name={game.name}
+              size="small"
+            />
+          </div>
         )}
       </div>
 
@@ -174,5 +178,4 @@ const Reviews = () => {
     </div>
   );
 };
-
 export default Reviews;

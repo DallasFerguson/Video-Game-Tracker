@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { LibraryContext } from '../../../contexts/LibraryContext';
 import { WishlistContext } from '../../../contexts/WishlistContext';
+import GameCover from '../GameCover/GameCover'; // Import the new component
 import Button from '../../ui/Button/Button';
 import './GameCard.css';
 
@@ -9,7 +10,7 @@ const GameCard = ({ game, showActions = true }) => {
   const { addToLibrary } = useContext(LibraryContext);
   const { addToWishlist } = useContext(WishlistContext);
 
-  // Format game cover URL correctly
+  // Format game cover URL correctly for adding to library/wishlist
   const getCoverUrl = (cover) => {
     if (!cover || !cover.url) return null;
     
@@ -25,7 +26,7 @@ const GameCard = ({ game, showActions = true }) => {
     }
     
     // Fallback for other URL formats
-    return cover.url;
+    return `https:${cover.url.replace('t_thumb', 't_cover_big')}`;
   };
 
   // Format release date to year only
@@ -72,16 +73,15 @@ const GameCard = ({ game, showActions = true }) => {
     }
   };
 
-  const coverUrl = getCoverUrl(game.cover);
-
   return (
     <div className="game-card">
       <div className="game-card-cover">
-        {coverUrl ? (
-          <img src={coverUrl} alt={game.name} />
-        ) : (
-          <div className="game-card-no-image">No Image</div>
-        )}
+        {/* Replace the existing img tag with GameCover component */}
+        <GameCover 
+          cover={game.cover}
+          name={game.name}
+          size="small"
+        />
       </div>
       
       <div className="game-card-info">

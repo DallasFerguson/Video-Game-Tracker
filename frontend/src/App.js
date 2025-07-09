@@ -1,3 +1,6 @@
+// File: frontend/src/App.js
+// Make sure the import and routes are properly configured
+
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LibraryProvider } from './contexts/LibraryContext';
@@ -11,9 +14,12 @@ import Wishlist from './pages/Wishlist/Wishlist';
 import GameDetail from './pages/Games/GameDetail/GameDetail';
 import Search from './pages/Games/Search/Search';
 import Trending from './pages/Games/Trending/Trending';
-import Reviews from './pages/Reviews/Reviews';
+import Reviews from './pages/Reviews/Reviews'; // Make sure this import is correct
 import NotFound from './pages/NotFound/NotFound';
 import './App.css';
+
+// Double-check that the path to the Reviews component is correct
+// If your file structure is different, adjust the import path accordingly
 
 const router = createBrowserRouter([
   {
@@ -25,7 +31,7 @@ const router = createBrowserRouter([
       { path: 'games/:id', element: <GameDetail /> },
       { path: 'search', element: <Search /> },
       { path: 'trending', element: <Trending /> },
-      { path: 'games/:id/reviews', element: <Reviews /> },
+      { path: 'games/:id/reviews', element: <Reviews /> }, // Make sure this route is correct
       { path: 'library', element: <Library /> },
       { path: 'wishlist', element: <Wishlist /> },
       

@@ -1,0 +1,43 @@
+.game-cover {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: #f0f0f0;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-cover.small {
+  width: 80px;
+  height: 120px;
+}
+
+.game-cover.medium {
+  width: 160px;
+  height: 220px;
+}
+
+.game-cover.large {
+  width: 300px;
+  height: 400px;
+}
+
+.game-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Show full image without cropping */
+  display: block;
+}
+
+.game-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: var(--spacing-sm);
+}

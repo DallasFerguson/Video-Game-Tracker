@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LibraryContext } from '../../../contexts/LibraryContext';
 import { ReviewContext } from '../../../contexts/ReviewContext';
+import GameCover from '../../../components/games/GameCover/GameCover'; // Import the new component
 import GameStatus from '../../games/GameStatus/GameStatus';
 import Button from '../../ui/Button/Button';
 import RatingDisplay from '../../reviews/RatingDisplay/RatingDisplay';
@@ -65,13 +66,11 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
   return (
     <div className="library-item">
       <div className="library-item-cover">
-        <img 
-          src={game.cover || '/assets/images/placeholders/game-cover-placeholder.jpg'} 
-          alt={game.name} 
-          onError={(e) => {
-            e.target.onerror = null; 
-            e.target.src = '/assets/images/placeholders/game-cover-placeholder.jpg';
-          }}
+        {/* Replace the img tag with GameCover component */}
+        <GameCover 
+          cover={game.cover}
+          name={game.name}
+          size="small"
         />
       </div>
 
