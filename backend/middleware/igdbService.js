@@ -96,7 +96,23 @@ const igdbRequest = async (endpoint, body) => {
 exports.searchGames = async (query, limit = 10) => {
   const body = `
     search "${query}";
-    fields name, cover.url, cover.image_id, first_release_date, rating, genres.name, platforms.name;
+    fields name, cover.url, cover.image_id, first_release_date, rating, genres.name, genres.id, platforms.name;
+    limit ${limit};
+  `;
+
+  return igdbRequest('/games', body);
+};
+
+/**
+ * Search games by genre
+ * @param {number} genreId - Genre ID to filter by
+ * @param {number} limit - Maximum number of results
+ * @returns {Promise<Array>} Array of game objects
+ */
+exports.searchGamesByGenre = async (genreId, limit = 10) => {
+  const body = `
+    fields name, cover.url, cover.image_id, first_release_date, rating, genres.name, genres.id, platforms.name;
+    where genres = (${genreId});
     limit ${limit};
   `;
 
@@ -111,7 +127,7 @@ exports.searchGames = async (query, limit = 10) => {
 exports.getGameDetails = async (gameId) => {
   const body = `
     fields name, summary, storyline, cover.url, cover.image_id, screenshots.url, screenshots.image_id,
-           genres.name, platforms.name, first_release_date, rating,
+           genres.name, genres.id, platforms.name, first_release_date, rating,
            videos.video_id, websites.url, websites.category;
     where id = ${gameId};
   `;
@@ -130,7 +146,7 @@ exports.getTrendingGames = async (limit = 5) => {
   const sixMonthsAgo = Math.floor(Date.now() / 1000) - 15552000;
   
   const body = `
-    fields name, cover.url, cover.image_id, first_release_date, rating, genres.name;
+    fields name, cover.url, cover.image_id, first_release_date, rating, genres.name, genres.id;
     sort rating desc;
     where rating != null & first_release_date > ${sixMonthsAgo};
     limit ${limit};
