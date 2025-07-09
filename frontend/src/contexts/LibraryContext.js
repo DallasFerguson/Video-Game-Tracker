@@ -36,7 +36,6 @@ export const LibraryProvider = ({ children }) => {
         addedDate: new Date().toISOString(),
         lastUpdated: new Date().toISOString(),
         status: game.status || 'plan_to_play',
-        rating: game.rating || 0,
         playtime: game.playtime || 0
       };
       

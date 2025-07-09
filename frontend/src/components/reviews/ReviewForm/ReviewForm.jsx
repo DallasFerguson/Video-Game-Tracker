@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { submitReview } from '../../../api/reviews';
+import { useState, useContext } from 'react';
+import { ReviewContext } from '../../../contexts/ReviewContext';
 import Button from '../../ui/Button/Button';
 import RatingInput from '../RatingInput/RatingInput';
 import './ReviewForm.css';
 
-const ReviewForm = ({ gameId, initialReview = null, onSuccess }) => {
+const ReviewForm = ({ gameId, initialReview = null, onSuccess, onCancel }) => {
+  const { addReview } = useContext(ReviewContext);
   const [review, setReview] = useState({
     rating: initialReview?.rating || 5,
     content: initialReview?.review || ''
@@ -18,12 +19,16 @@ const ReviewForm = ({ gameId, initialReview = null, onSuccess }) => {
     setError('');
 
     try {
-      await submitReview(
-        localStorage.getItem('token'),
-        gameId,
-        { rating: review.rating, review: review.content }
-      );
-      onSuccess?.();
+      // Use the context function instead of direct API call
+      await addReview(gameId, {
+        rating: review.rating,
+        content: review.content
+      });
+      
+      // Call success callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (err) {
       setError(err.message || 'Failed to submit review');
     } finally {
@@ -75,6 +80,15 @@ const ReviewForm = ({ gameId, initialReview = null, onSuccess }) => {
           >
             {isSubmitting ? 'Submitting...' : 'Submit Review'}
           </Button>
+          {onCancel && (
+            <Button 
+              type="button"
+              variant="secondary"
+              onClick={onCancel}
+            >
+              Cancel
+            </Button>
+          )}
         </div>
       </form>
     </div>

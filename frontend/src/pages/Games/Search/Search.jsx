@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { searchGames } from '../../../api/games';
 import GameCard from '../../../components/games/GameCard/GameCard';
@@ -14,12 +14,18 @@ const Search = () => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [recentSearches, setRecentSearches] = useState(getSearchHistory());
+  const [recentSearches, setRecentSearches] = useState([]);
   const searchInputRef = useRef(null);
+  const isInitialMount = useRef(true);
   
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  // Update URL when search query changes
+  // Load recent searches only once on component mount
+  useEffect(() => {
+    setRecentSearches(getSearchHistory());
+  }, []);
+
+  // Update URL when debounced search query changes
   useEffect(() => {
     if (debouncedSearchQuery) {
       setSearchParams({ q: debouncedSearchQuery });
@@ -28,8 +34,15 @@ const Search = () => {
     }
   }, [debouncedSearchQuery, setSearchParams]);
 
-  // Fetch search results
+  // Fetch search results when debounced query changes
   useEffect(() => {
+    // Skip the initial mount to prevent unnecessary API calls
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      // But still perform search if there's an initial query from URL
+      if (!debouncedSearchQuery) return;
+    }
+
     const fetchGames = async () => {
       if (!debouncedSearchQuery) {
         setGames([]);
@@ -42,18 +55,17 @@ const Search = () => {
         const results = await searchGames(debouncedSearchQuery);
         setGames(results);
         
-        // Save to recent searches if query is new and results are found
-        if (debouncedSearchQuery && results.length > 0) {
-          const updatedSearches = recentSearches.filter(item => 
-            item.toLowerCase() !== debouncedSearchQuery.toLowerCase()
+        // Only add to search history if we have results and it's not already there
+        if (results.length > 0) {
+          const searchExists = recentSearches.some(
+            item => item.toLowerCase() === debouncedSearchQuery.toLowerCase()
           );
           
-          // Add to beginning of array and limit to 5 items
-          updatedSearches.unshift(debouncedSearchQuery);
-          const limitedSearches = updatedSearches.slice(0, 5);
-          
-          setRecentSearches(limitedSearches);
-          saveSearchHistory(limitedSearches);
+          if (!searchExists) {
+            const updatedSearches = [debouncedSearchQuery, ...recentSearches].slice(0, 5);
+            setRecentSearches(updatedSearches);
+            saveSearchHistory(updatedSearches);
+          }
         }
       } catch (err) {
         console.error('Search failed:', err);
@@ -64,7 +76,7 @@ const Search = () => {
     };
 
     fetchGames();
-  }, [debouncedSearchQuery, recentSearches]);
+  }, [debouncedSearchQuery]); // Only depend on the debounced query
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -89,6 +101,7 @@ const Search = () => {
   // Handle retry search on error
   const handleRetry = () => {
     if (debouncedSearchQuery) {
+      // Force a re-render to trigger the useEffect again
       setError(null);
       setLoading(true);
       searchGames(debouncedSearchQuery)

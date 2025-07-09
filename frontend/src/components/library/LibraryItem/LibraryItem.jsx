@@ -1,22 +1,36 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { LibraryContext } from '../../../contexts/LibraryContext';
+import { ReviewContext } from '../../../contexts/ReviewContext';
 import GameStatus from '../../games/GameStatus/GameStatus';
 import Button from '../../ui/Button/Button';
+import RatingDisplay from '../../reviews/RatingDisplay/RatingDisplay';
 import './LibraryItem.css';
 
 const LibraryItem = ({ game, onUpdate, onRemove }) => {
   const { updateInLibrary, removeFromLibrary } = useContext(LibraryContext);
+  const { getGameReviews } = useContext(ReviewContext);
   const [isEditing, setIsEditing] = useState(false);
   const [playtime, setPlaytime] = useState(game.playtime || 0);
-  const [rating, setRating] = useState(game.rating || 0);
   const [isLoading, setIsLoading] = useState(false);
+  const [review, setReview] = useState(null);
+
+  // Fetch review for this game
+  useEffect(() => {
+    if (getGameReviews) {
+      const gameReviews = getGameReviews(game.gameId);
+      if (gameReviews && gameReviews.length > 0) {
+        setReview(gameReviews[0]);
+      }
+    }
+  }, [game.gameId, getGameReviews]);
 
   const handleSave = async () => {
     setIsLoading(true);
     try {
       await updateInLibrary(
         game.gameId, 
-        { playtime, rating }
+        { playtime }
       );
       onUpdate?.();
       setIsEditing(false);
@@ -39,6 +53,13 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
         setIsLoading(false);
       }
     }
+  };
+
+  // Determine display text for playtime
+  const getPlaytimeDisplay = (hours) => {
+    if (hours === 0) return "Not played yet";
+    if (hours < 1) return "Less than 1 hour";
+    return `${hours} hour${hours !== 1 ? 's' : ''}`;
   };
 
   return (
@@ -70,19 +91,9 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
               <input
                 type="number"
                 min="0"
+                step="0.5"
                 value={playtime}
-                onChange={(e) => setPlaytime(parseInt(e.target.value) || 0)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Rating (1-10)</label>
-              <input
-                type="number"
-                min="0"
-                max="10"
-                value={rating}
-                onChange={(e) => setRating(parseInt(e.target.value) || 0)}
+                onChange={(e) => setPlaytime(parseFloat(e.target.value) || 0)}
               />
             </div>
 
@@ -106,12 +117,9 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
           <div className="library-item-info">
             <div className="library-item-stat">
               <span className="stat-label">Playtime:</span>
-              <span className="stat-value">{game.playtime || 0} hours</span>
+              <span className="stat-value">{getPlaytimeDisplay(game.playtime || 0)}</span>
             </div>
-            <div className="library-item-stat">
-              <span className="stat-label">Rating:</span>
-              <span className="stat-value">{game.rating || 0}/10</span>
-            </div>
+            
             <div className="library-item-stat">
               <span className="stat-label">Added:</span>
               <span className="stat-value">
@@ -119,12 +127,41 @@ const LibraryItem = ({ game, onUpdate, onRemove }) => {
               </span>
             </div>
 
+            {/* Display review if it exists */}
+            {review && (
+              <div className="library-item-review">
+                <h4>Your Review</h4>
+                <div className="review-rating">
+                  <RatingDisplay value={review.rating} />
+                </div>
+                <div className="review-content">
+                  {review.review}
+                </div>
+                <Link to={`/games/${game.gameId}/reviews`} className="review-link">
+                  <Button variant="outline" size="small">
+                    Edit Review
+                  </Button>
+                </Link>
+              </div>
+            )}
+
+            {/* Link to write a review if none exists */}
+            {!review && (
+              <div className="library-item-no-review">
+                <Link to={`/games/${game.gameId}/reviews`} className="review-link">
+                  <Button variant="outline" size="small">
+                    Write Review
+                  </Button>
+                </Link>
+              </div>
+            )}
+
             <div className="library-item-actions">
               <Button 
                 variant="outline" 
                 onClick={() => setIsEditing(true)}
               >
-                Edit
+                Log Playtime
               </Button>
               <Button 
                 variant="danger" 

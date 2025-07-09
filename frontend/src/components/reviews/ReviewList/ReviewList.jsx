@@ -1,14 +1,22 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { ReviewContext } from '../../../contexts/ReviewContext';
 import ReviewItem from '../ReviewItem/ReviewItem';
 import ReviewForm from '../ReviewForm/ReviewForm';
 import './ReviewList.css';
 
-const ReviewList = ({ reviews, gameId, currentUserReview, onUpdate }) => {
+const ReviewList = ({ gameId, onUpdate }) => {
+  const { reviews, getGameReviews } = useContext(ReviewContext);
   const [editingReview, setEditingReview] = useState(null);
+  
+  // Get all reviews for this game
+  const gameReviews = getGameReviews ? getGameReviews(parseInt(gameId)) : [];
+  
+  // For a personal tracker, there's typically just one review per game (your own)
+  const currentUserReview = gameReviews.length > 0 ? gameReviews[0] : null;
 
   const handleReviewSubmit = () => {
     setEditingReview(null);
-    onUpdate?.();
+    if (onUpdate) onUpdate();
   };
 
   const handleEdit = (review) => {
@@ -16,7 +24,7 @@ const ReviewList = ({ reviews, gameId, currentUserReview, onUpdate }) => {
   };
 
   const handleDelete = () => {
-    onUpdate?.();
+    if (onUpdate) onUpdate();
   };
 
   return (
@@ -34,25 +42,26 @@ const ReviewList = ({ reviews, gameId, currentUserReview, onUpdate }) => {
         </div>
       )}
 
-      {(editingReview || (!currentUserReview && reviews.length > 0)) && (
+      {(editingReview || (!currentUserReview && gameReviews.length === 0)) && (
         <ReviewForm
           gameId={gameId}
           initialReview={editingReview}
           onSuccess={handleReviewSubmit}
+          onCancel={editingReview ? () => setEditingReview(null) : null}
         />
       )}
 
-      {reviews
-        .filter(review => !currentUserReview || review.userId !== currentUserReview.userId)
+      {gameReviews
+        .filter(review => !currentUserReview || review.id !== currentUserReview.id)
         .map(review => (
           <ReviewItem 
-            key={`${review.userId}-${review.gameId}`} 
+            key={review.id} 
             review={review}
             onDelete={handleDelete}
           />
         ))}
 
-      {reviews.length === 0 && !currentUserReview && (
+      {gameReviews.length === 0 && !currentUserReview && (
         <div className="no-reviews">No reviews yet. Be the first to review!</div>
       )}
     </div>

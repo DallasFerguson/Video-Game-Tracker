@@ -1,6 +1,7 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LibraryContext } from '../../contexts/LibraryContext';
+import { ReviewContext } from '../../contexts/ReviewContext';
 import LibraryItem from '../../components/library/LibraryItem/LibraryItem';
 import LibraryFilter from '../../components/library/LibraryFilter/LibraryFilter';
 import LoadingSpinner from '../../components/ui/LoadingSpinner/LoadingSpinner';
@@ -11,6 +12,7 @@ import './Library.css';
 const Library = () => {
   const [searchParams] = useSearchParams();
   const { library, loading, error, fetchLibrary } = useContext(LibraryContext);
+  const { fetchReviews } = useContext(ReviewContext);
   const [filters, setFilters] = useState({
     status: searchParams.get('status') || 'all',
     sort: searchParams.get('sort') || 'recent',
@@ -18,6 +20,14 @@ const Library = () => {
   });
   const [showImport, setShowImport] = useState(false);
   const [importValue, setImportValue] = useState('');
+
+  // Fetch library and reviews on component mount
+  useEffect(() => {
+    fetchLibrary();
+    if (fetchReviews) {
+      fetchReviews();
+    }
+  }, [fetchLibrary, fetchReviews]);
 
   // Filter games by current filters
   const filteredGames = library.filter(game => {
@@ -33,8 +43,6 @@ const Library = () => {
         return a.name.localeCompare(b.name);
       case 'playtime':
         return (b.playtime || 0) - (a.playtime || 0);
-      case 'rating':
-        return (b.rating || 0) - (a.rating || 0);
       case 'recent':
       default:
         return new Date(b.addedDate || 0) - new Date(a.addedDate || 0);
@@ -62,6 +70,9 @@ const Library = () => {
       const data = JSON.parse(importValue);
       importData(data);
       fetchLibrary(); // Refresh the library data
+      if (fetchReviews) {
+        fetchReviews(); // Also refresh reviews
+      }
       setShowImport(false);
       setImportValue('');
     } catch (err) {
@@ -129,7 +140,10 @@ const Library = () => {
             <LibraryItem 
               key={game.gameId} 
               game={game}
-              onUpdate={fetchLibrary}
+              onUpdate={() => {
+                fetchLibrary();
+                if (fetchReviews) fetchReviews();
+              }}
               onRemove={fetchLibrary}
             />
           ))}

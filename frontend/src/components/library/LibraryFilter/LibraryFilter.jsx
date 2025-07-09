@@ -11,8 +11,7 @@ const STATUS_FILTERS = [
 const SORT_OPTIONS = [
   { value: 'recent', label: 'Recently Added' },
   { value: 'name', label: 'Name (A-Z)' },
-  { value: 'playtime', label: 'Playtime' },
-  { value: 'rating', label: 'Rating' }
+  { value: 'playtime', label: 'Playtime' }
 ];
 
 const LibraryFilter = ({ filters, onFilterChange }) => {
