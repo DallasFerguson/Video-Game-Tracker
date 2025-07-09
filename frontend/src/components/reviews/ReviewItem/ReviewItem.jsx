@@ -1,23 +1,20 @@
+// src/components/reviews/ReviewItem/ReviewItem.jsx
 import { useState, useContext } from 'react';
-import { AuthContext } from '../../../contexts/AuthContext';
-import { deleteReview } from '../../../api/reviews';
+import { ReviewContext } from '../../../contexts/ReviewContext';
 import RatingDisplay from '../RatingDisplay/RatingDisplay';
 import Button from '../../ui/Button/Button';
 import './ReviewItem.css';
 
 const ReviewItem = ({ review, onEdit, onDelete }) => {
-  const { user } = useContext(AuthContext);
+  const { deleteReview } = useContext(ReviewContext);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this review?')) {
       setIsDeleting(true);
       try {
-        await deleteReview(
-          localStorage.getItem('token'),
-          review.gameId
-        );
-        onDelete?.(review.gameId);
+        await deleteReview(review.gameId);
+        if (onDelete) onDelete(review.gameId);
       } catch (error) {
         console.error('Delete failed:', error);
       } finally {
@@ -26,12 +23,10 @@ const ReviewItem = ({ review, onEdit, onDelete }) => {
     }
   };
 
-  const isCurrentUser = user?.id === review.userId;
-
   return (
     <div className="review-item">
       <div className="review-header">
-        <div className="review-user">{review.username}</div>
+        <div className="review-user">{review.username || 'Me'}</div>
         <div className="review-date">
           {new Date(review.date).toLocaleDateString()}
         </div>
@@ -40,25 +35,23 @@ const ReviewItem = ({ review, onEdit, onDelete }) => {
 
       <div className="review-content">{review.review}</div>
 
-      {isCurrentUser && (
-        <div className="review-actions">
-          <Button 
-            variant="outline" 
-            size="small"
-            onClick={() => onEdit(review)}
-          >
-            Edit
-          </Button>
-          <Button 
-            variant="danger" 
-            size="small"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </Button>
-        </div>
-      )}
+      <div className="review-actions">
+        <Button 
+          variant="outline" 
+          size="small"
+          onClick={() => onEdit(review)}
+        >
+          Edit
+        </Button>
+        <Button 
+          variant="danger" 
+          size="small"
+          onClick={handleDelete}
+          disabled={isDeleting}
+        >
+          {isDeleting ? 'Deleting...' : 'Delete'}
+        </Button>
+      </div>
     </div>
   );
 };

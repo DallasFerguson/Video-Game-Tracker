@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useCallback, useContext } from 'react';
 import { getReviews, saveReviews } from '../utils/localStorageUtils';
 import { NotificationContext } from './NotificationContext';
+import { LibraryContext } from './LibraryContext';
 
 export const ReviewContext = createContext();
 
@@ -9,6 +10,7 @@ export const ReviewProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { notify } = useContext(NotificationContext || { notify: () => {} });
+  const { library, addToLibrary } = useContext(LibraryContext || { library: [], addToLibrary: () => {} });
 
   const fetchReviews = useCallback(async () => {
     try {
@@ -32,15 +34,16 @@ export const ReviewProvider = ({ children }) => {
     return reviews.filter(review => review.gameId === parseInt(gameId));
   }, [reviews]);
 
-  const addReview = useCallback((gameId, reviewData) => {
+  const addReview = useCallback((gameId, reviewData, gameDetails = null) => {
     try {
       // Generate a unique ID for the review
       const reviewId = Date.now().toString();
+      const parsedGameId = parseInt(gameId);
       
       // Create new review object
       const newReview = {
         id: reviewId,
-        gameId: parseInt(gameId),
+        gameId: parsedGameId,
         username: 'Me',  // For personal use app
         userId: 'personal',  // Static ID for personal use
         rating: reviewData.rating,
@@ -49,7 +52,7 @@ export const ReviewProvider = ({ children }) => {
       };
       
       // Check if a review for this game already exists
-      const existingReviewIndex = reviews.findIndex(r => r.gameId === parseInt(gameId));
+      const existingReviewIndex = reviews.findIndex(r => r.gameId === parsedGameId);
       
       let updatedReviews;
       if (existingReviewIndex !== -1) {
@@ -59,6 +62,22 @@ export const ReviewProvider = ({ children }) => {
       } else {
         // Add new review
         updatedReviews = [...reviews, newReview];
+        
+        // Check if game is in library, if not, add it
+        const isInLibrary = library.some(game => game.gameId === parsedGameId);
+        
+        if (!isInLibrary && gameDetails) {
+          // Add game to library with 'playing' status
+          addToLibrary({
+            gameId: parsedGameId,
+            name: gameDetails.name,
+            cover: gameDetails.cover?.url 
+              ? `https:${gameDetails.cover.url.replace('t_thumb', 't_cover_big')}` 
+              : null,
+            status: 'playing'
+          });
+          if (notify) notify(`${gameDetails.name} added to your library`, 'success');
+        }
       }
       
       setReviews(updatedReviews);
@@ -69,7 +88,7 @@ export const ReviewProvider = ({ children }) => {
       console.error('Error adding review:', error);
       if (notify) notify('Failed to save review', 'error');
     }
-  }, [reviews, notify]);
+  }, [reviews, library, addToLibrary, notify]);
 
   const deleteReview = useCallback((gameId) => {
     try {

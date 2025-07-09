@@ -4,7 +4,7 @@ import ReviewItem from '../ReviewItem/ReviewItem';
 import ReviewForm from '../ReviewForm/ReviewForm';
 import './ReviewList.css';
 
-const ReviewList = ({ gameId, onUpdate }) => {
+const ReviewList = ({ gameId, onUpdate, gameDetails }) => {
   const { reviews, getGameReviews } = useContext(ReviewContext);
   const [editingReview, setEditingReview] = useState(null);
   
@@ -46,6 +46,7 @@ const ReviewList = ({ gameId, onUpdate }) => {
         <ReviewForm
           gameId={gameId}
           initialReview={editingReview}
+          gameDetails={gameDetails}
           onSuccess={handleReviewSubmit}
           onCancel={editingReview ? () => setEditingReview(null) : null}
         />

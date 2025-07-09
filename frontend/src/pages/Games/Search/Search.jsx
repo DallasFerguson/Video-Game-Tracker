@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { searchGames } from '../../../api/games';
 import GameCard from '../../../components/games/GameCard/GameCard';
@@ -55,7 +55,7 @@ const Search = () => {
         const results = await searchGames(debouncedSearchQuery);
         setGames(results);
         
-        // Only add to search history if we have results and it's not already there
+        // Only add text searches to search history
         if (results.length > 0) {
           const searchExists = recentSearches.some(
             item => item.toLowerCase() === debouncedSearchQuery.toLowerCase()
@@ -76,7 +76,7 @@ const Search = () => {
     };
 
     fetchGames();
-  }, [debouncedSearchQuery]); // Only depend on the debounced query
+  }, [debouncedSearchQuery]); 
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -104,6 +104,7 @@ const Search = () => {
       // Force a re-render to trigger the useEffect again
       setError(null);
       setLoading(true);
+      
       searchGames(debouncedSearchQuery)
         .then(results => {
           setGames(results);
@@ -160,45 +161,6 @@ const Search = () => {
                   {query}
                 </button>
               ))}
-            </div>
-          </div>
-        )}
-        
-        {/* Popular categories (static) */}
-        {!debouncedSearchQuery && (
-          <div className="search-categories">
-            <h3>Popular Categories</h3>
-            <div className="category-buttons">
-              <Button
-                variant="outline"
-                onClick={() => handleRecentSearch('RPG')}
-              >
-                RPG
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleRecentSearch('Action')}
-              >
-                Action
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleRecentSearch('Adventure')}
-              >
-                Adventure
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleRecentSearch('Shooter')}
-              >
-                Shooter
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleRecentSearch('Strategy')}
-              >
-                Strategy
-              </Button>
             </div>
           </div>
         )}

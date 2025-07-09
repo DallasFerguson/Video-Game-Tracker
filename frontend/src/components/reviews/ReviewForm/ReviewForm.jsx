@@ -1,10 +1,10 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { ReviewContext } from '../../../contexts/ReviewContext';
 import Button from '../../ui/Button/Button';
 import RatingInput from '../RatingInput/RatingInput';
 import './ReviewForm.css';
 
-const ReviewForm = ({ gameId, initialReview = null, onSuccess, onCancel }) => {
+const ReviewForm = ({ gameId, initialReview = null, gameDetails = null, onSuccess, onCancel }) => {
   const { addReview } = useContext(ReviewContext);
   const [review, setReview] = useState({
     rating: initialReview?.rating || 5,
@@ -19,11 +19,11 @@ const ReviewForm = ({ gameId, initialReview = null, onSuccess, onCancel }) => {
     setError('');
 
     try {
-      // Use the context function instead of direct API call
+      // Pass gameDetails to addReview
       await addReview(gameId, {
         rating: review.rating,
         content: review.content
-      });
+      }, gameDetails);
       
       // Call success callback if provided
       if (onSuccess) {
