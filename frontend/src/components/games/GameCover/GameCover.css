@@ -8,25 +8,26 @@
   justify-content: center;
 }
 
+/* Significantly increased size dimensions for all size variants */
 .game-cover.small {
-  width: 80px;
-  height: 120px;
+  width: 200px;  /* Increased from 150px */
+  height: 300px; /* Increased from 225px */
 }
 
 .game-cover.medium {
-  width: 160px;
-  height: 220px;
+  width: 350px;  /* Increased from 250px */
+  height: 525px; /* Increased from 375px */
 }
 
 .game-cover.large {
-  width: 300px;
-  height: 400px;
+  width: 600px;  /* Increased from 450px */
+  height: 900px; /* Increased from 650px */
 }
 
 .game-cover img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Show full image without cropping */
+  object-fit: contain; /* Still using contain to show full artwork */
   display: block;
 }
 
