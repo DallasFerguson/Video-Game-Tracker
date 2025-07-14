@@ -1,3 +1,4 @@
+// src/pages/Library/Library.jsx
 import { useState, useContext, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LibraryContext } from '../../contexts/LibraryContext';
@@ -6,7 +7,6 @@ import LibraryItem from '../../components/library/LibraryItem/LibraryItem';
 import LibraryFilter from '../../components/library/LibraryFilter/LibraryFilter';
 import LoadingSpinner from '../../components/ui/LoadingSpinner/LoadingSpinner';
 import Button from '../../components/ui/Button/Button';
-import { exportData, importData } from '../../utils/localStorageUtils';
 import './Library.css';
 
 const Library = () => {
@@ -18,8 +18,6 @@ const Library = () => {
     sort: searchParams.get('sort') || 'recent',
     search: ''
   });
-  const [showImport, setShowImport] = useState(false);
-  const [importValue, setImportValue] = useState('');
 
   // Fetch library and reviews on component mount
   useEffect(() => {
@@ -53,34 +51,6 @@ const Library = () => {
     setFilters({ ...filters, ...newFilters });
   };
 
-  const handleExport = () => {
-    const data = exportData();
-    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'game-tracker-data.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
-
-  const handleImport = () => {
-    try {
-      const data = JSON.parse(importValue);
-      importData(data);
-      fetchLibrary(); // Refresh the library data
-      if (fetchReviews) {
-        fetchReviews(); // Also refresh reviews
-      }
-      setShowImport(false);
-      setImportValue('');
-    } catch (err) {
-      console.error('Failed to import data:', err);
-      alert('Invalid data format. Please check your JSON file.');
-    }
-  };
-
   if (loading) {
     return (
       <div className="library-loading">
@@ -105,29 +75,7 @@ const Library = () => {
           <h1>My Game Library</h1>
           <p>{filteredGames.length} games</p>
         </div>
-        <div className="library-actions">
-          <Button variant="outline" onClick={handleExport}>
-            Export Data
-          </Button>
-          <Button variant="outline" onClick={() => setShowImport(!showImport)}>
-            {showImport ? 'Cancel Import' : 'Import Data'}
-          </Button>
-        </div>
       </div>
-
-      {showImport && (
-        <div className="import-container">
-          <h3>Import Data</h3>
-          <p>Paste your JSON backup below:</p>
-          <textarea 
-            value={importValue}
-            onChange={(e) => setImportValue(e.target.value)}
-            className="import-textarea"
-            rows={5}
-          />
-          <Button onClick={handleImport}>Import</Button>
-        </div>
-      )}
 
       <LibraryFilter 
         filters={filters}
