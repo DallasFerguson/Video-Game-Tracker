@@ -1,11 +1,24 @@
 :root {
-  /* Colors */
-  --primary-color: #2a75bb; /* Pokémon blue */
-  --secondary-color: #ffcb05; /* Pokémon yellow */
-  --dark-color: #3c5aa6; /* Dark blue */
-  --light-color: #f8f8f8;
-  --danger-color: #e3350d; /* Pokémon red */
-  --success-color: #4dad5b; /* Pokémon green */
+  /* Colors - Using a modern gaming-inspired palette */
+  --primary-color: #2a75bb; /* Deep blue */
+  --secondary-color: #ffcb05; /* Vibrant yellow */
+  --accent-color-1: #7c3aed; /* Rich purple */
+  --accent-color-2: #4dad5b; /* Emerald green */
+  --accent-color-3: #e3350d; /* Vibrant red */
+  --accent-color-4: #ff9500; /* Warm orange */
+  
+  --dark-color: #121212; /* Nearly black for backgrounds */
+  --dark-color-2: #1e1e2d; /* Slightly lighter dark for elements */
+  --dark-color-3: #2a2a3c; /* Even lighter for cards and containers */
+  
+  --light-color: #f8f8f8; /* Nearly white for text */
+  --light-color-2: rgba(255, 255, 255, 0.7); /* Semi-transparent white for secondary text */
+  --light-color-3: rgba(255, 255, 255, 0.5); /* More transparent white for tertiary elements */
+  
+  --danger-color: #e3350d; /* Error red */
+  --success-color: #4dad5b; /* Success green */
+  --warning-color: #ff9500; /* Warning orange */
+  --info-color: #2a75bb; /* Info blue */
   
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -13,30 +26,208 @@
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
   
   /* Typography */
-  --font-main: 'Roboto', sans-serif;
-  --font-accent: 'Press Start 2P', cursive; /* Retro gaming font */
+  --font-main: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-accent: 'Press Start 2P', monospace; /* Retro gaming font */
+  --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
   --text-lg: 1.25rem;
   --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3rem;
+  --text-5xl: 3.5rem;
   
   /* Game card dimensions */
-  --game-card-width: 200px;
-  --game-card-height: 280px;
+  --game-card-width: 220px;
+  --game-card-height: 320px;
   
   /* Shadows */
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 8px rgba(0,0,0,0.2);
-  --shadow-lg: 0 8px 16px rgba(0,0,0,0.3);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.4);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  /* Glows */
+  --glow-sm: 0 0 5px rgba(124, 58, 237, 0.3);
+  --glow-md: 0 0 15px rgba(124, 58, 237, 0.3);
+  --glow-lg: 0 0 30px rgba(124, 58, 237, 0.3);
   
   /* Border radius */
   --radius-sm: 4px;
   --radius-md: 8px;
-  --radius-lg: 16px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
   
   /* Transition */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* Z-index layers */
+  --z-negative: -1;
+  --z-base: 0;
+  --z-elevated: 10;
+  --z-dropdown: 20;
+  --z-sticky: 30;
+  --z-fixed: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-toast: 70;
+  --z-tooltip: 80;
+}
+
+/* Additional global styles */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(30, 30, 45, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color-1);
+}
+
+/* Global button styles */
+button {
+  cursor: pointer;
+  font-family: var(--font-main);
+}
+
+button:focus {
+  outline: none;
+}
+
+/* Global link styles */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition-normal);
+}
+
+a:hover {
+  color: var(--accent-color-1);
+}
+
+/* Global form styles */
+input, select, textarea {
+  font-family: var(--font-main);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+}
+
+/* Animation keyframes that can be used globally */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Utility classes */
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color-1));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glass-effect {
+  background: rgba(30, 30, 45, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.floating {
+  animation: float 4s infinite ease-in-out;
+}
+
+.pulsing {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.slide-in-up {
+  animation: slideInUp 0.3s ease forwards;
+}
+
+/* Dark theme specific adjustments */
+[data-theme="dark"] {
+  --primary-color: #3a85cb; /* Slightly lighter blue for dark theme */
+  --secondary-color: #ffdb15; /* Slightly brighter yellow for dark theme */
+}
+
+/* Base styles for all pages */
+body {
+  background-color: var(--dark-color);
+  color: var(--light-color);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-main);
+}
+
+/* Make images responsive by default */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for overscroll effects */
+html {
+  overflow-x: hidden;
 }

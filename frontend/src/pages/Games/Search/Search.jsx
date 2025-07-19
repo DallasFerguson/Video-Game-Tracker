@@ -6,7 +6,7 @@ import LoadingSpinner from '../../../components/ui/LoadingSpinner/LoadingSpinner
 import Button from '../../../components/ui/Button/Button';
 import { getSearchHistory, saveSearchHistory } from '../../../utils/localStorageUtils';
 import useDebounce from '../../../hooks/useDebounce';
-import './Search.css';
+import './Search.css'; // Make sure this points to your enhanced CSS file
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,12 +20,18 @@ const Search = () => {
   
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  //load recent searches only once on component mount
+  // Categories for quick filtering
+  const gameCategories = [
+    "Action", "Adventure", "RPG", "Strategy", 
+    "Shooter", "Sports", "Racing", "Puzzle"
+  ];
+
+  // Load recent searches only once on component mount
   useEffect(() => {
     setRecentSearches(getSearchHistory());
   }, []);
 
-  //update URL when debounced search query changes
+  // Update URL when debounced search query changes
   useEffect(() => {
     if (debouncedSearchQuery) {
       setSearchParams({ q: debouncedSearchQuery });
@@ -34,12 +40,12 @@ const Search = () => {
     }
   }, [debouncedSearchQuery, setSearchParams]);
 
-  //fetch search results when debounced query changes
+  // Fetch search results when debounced query changes
   useEffect(() => {
-    //skip the initial mount to prevent unnecessary API calls
+    // Skip the initial mount to prevent unnecessary API calls
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      //but still perform search if there's an initial query from URL
+      // But still perform search if there's an initial query from URL
       if (!debouncedSearchQuery) return;
     }
 
@@ -76,7 +82,7 @@ const Search = () => {
     };
 
     fetchGames();
-  }, [debouncedSearchQuery]); 
+  }, [debouncedSearchQuery, recentSearches]); 
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -98,10 +104,10 @@ const Search = () => {
     saveSearchHistory([]);
   };
 
-  //handle retry search on error
+  // Handle retry search on error
   const handleRetry = () => {
     if (debouncedSearchQuery) {
-      //force a re-render to trigger the useEffect again
+      // Force a re-render to trigger the useEffect again
       setError(null);
       setLoading(true);
       
@@ -116,14 +122,22 @@ const Search = () => {
         });
     }
   };
-
+  
+  // Updated return statement with enhanced layout
   return (
     <div className="search-page">
+      {/* Floating background elements */}
+      <div className="floating-controller">🎮</div>
+      <div className="floating-controller">🎲</div>
+      <div className="floating-controller">🏆</div>
+      
+      <h1 className="search-title">Discover Your Next Adventure</h1>
+      <p className="subtitle">Search across thousands of games to find your next obsession</p>
+      
       <div className="search-container">
-        <h1 className="search-title">Find Your Next Adventure</h1>
-        
         <div className="search-input-container">
           <div className="search-input-wrapper">
+            <span className="search-icon">🔍</span>
             <input
               ref={searchInputRef}
               type="text"
@@ -139,8 +153,25 @@ const Search = () => {
               </button>
             )}
           </div>
-          <div className="search-icon">🔍</div>
         </div>
+        
+        {/* Categories - display only when not searching */}
+        {!debouncedSearchQuery && (
+          <div className="search-categories">
+            <h3>Popular Categories</h3>
+            <div className="category-buttons">
+              {gameCategories.map((category, index) => (
+                <button
+                  key={index}
+                  className="button"
+                  onClick={() => setSearchQuery(category)}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         
         {/* Recent searches */}
         {!debouncedSearchQuery && recentSearches.length > 0 && (
@@ -176,12 +207,12 @@ const Search = () => {
           </div>
           
           {loading ? (
-            <div className="search-loading">
+            <div className="game-list-loading">
               <LoadingSpinner />
               <p>Searching the universe of games...</p>
             </div>
           ) : error ? (
-            <div className="search-error">
+            <div className="game-list-error">
               <p>{error}</p>
               <p className="error-details">
                 This might be due to a connection issue with the IGDB API.
@@ -206,7 +237,7 @@ const Search = () => {
               ))}
             </div>
           ) : (
-            <div className="no-results">
+            <div className="game-list-empty">
               <div className="no-results-icon">🎮</div>
               <h3>No games found</h3>
               <p>Try a different search term or browse trending games</p>
@@ -217,11 +248,6 @@ const Search = () => {
           )}
         </div>
       )}
-      
-      {/* Decorative elements */}
-      <div className="search-decoration search-decoration-1">🎮</div>
-      <div className="search-decoration search-decoration-2">🎲</div>
-      <div className="search-decoration search-decoration-3">🏆</div>
     </div>
   );
 };

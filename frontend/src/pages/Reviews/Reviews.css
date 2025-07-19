@@ -1,9 +1,51 @@
 .reviews-page {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: var(--spacing-lg);
+  padding: 2rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 80px);
+  background-color: #121212;
+  color: #f8f8f8;
 }
 
+/* Animated background */
+.reviews-page::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 70% 30%, rgba(77, 173, 91, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 30% 70%, rgba(124, 58, 237, 0.1) 0%, transparent 50%);
+  z-index: -2;
+}
+
+/* Grid lines in background */
+.reviews-page::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(rgba(77, 173, 91, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77, 173, 91, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  z-index: -1;
+  pointer-events: none;
+  animation: gridMove 60s linear infinite;
+}
+
+@keyframes gridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 30px 30px; }
+}
+
+/* Loading and error states */
 .reviews-loading,
 .reviews-error {
   display: flex;
@@ -12,66 +54,476 @@
   min-height: 50vh;
 }
 
+.reviews-loading {
+  position: relative;
+}
+
+.reviews-loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(77, 173, 91, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.3; }
+  50% { transform: scale(1.2); opacity: 0.6; }
+  100% { transform: scale(0.8); opacity: 0.3; }
+}
+
 .reviews-error {
   flex-direction: column;
   text-align: center;
+  min-height: 40vh;
+  background: rgba(227, 53, 13, 0.1);
+  border: 1px solid rgba(227, 53, 13, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  backdrop-filter: blur(10px);
 }
 
 .reviews-error p {
-  color: var(--danger-color);
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1.5rem;
 }
 
+/* Reviews header */
 .reviews-header {
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
   flex-wrap: wrap;
+  background: rgba(30, 30, 45, 0.7);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.reviews-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #4dad5b, #7c3aed);
+  opacity: 0.7;
 }
 
 .reviews-header h1 {
+  font-family: var(--font-accent);
+  font-size: 1.8rem;
   margin: 0;
-  color: var(--dark-color);
+  background: linear-gradient(135deg, #4dad5b, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  flex: 1;
 }
 
-.game-cover {
-  width: 60px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-sm);
+.back-link {
+  flex: 0 0 auto;
 }
 
-.user-review-section,
-.all-reviews-section {
-  margin-bottom: var(--spacing-xl);
+.back-link .button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: rgba(30, 30, 45, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s;
 }
 
-.user-review-section h2,
-.all-reviews-section h2 {
-  color: var(--dark-color);
-  margin-bottom: var(--spacing-lg);
-  padding-bottom: var(--spacing-xs);
-  border-bottom: 1px solid #eee;
+.back-link .button::before {
+  content: "←";
+  font-size: 1.1rem;
 }
 
-.no-reviews {
-  color: #666;
-  text-align: center;
-  padding: var(--spacing-xl);
-  background-color: white;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+.back-link .button:hover {
+  background: rgba(124, 58, 237, 0.2);
+  border-color: rgba(124, 58, 237, 0.5);
+  transform: translateX(-3px);
 }
 
+.reviews-game-cover {
+  flex: 0 0 auto;
+}
+
+/* Review form section */
+.review-form-section {
+  margin-bottom: 2.5rem;
+  background: rgba(30, 30, 45, 0.7);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.review-form-section h2 {
+  font-family: var(--font-accent);
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: white;
+  position: relative;
+  display: inline-block;
+}
+
+.review-form-section h2::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #4dad5b, #7c3aed);
+  opacity: 0.7;
+}
+
+/* Personal review section */
+.personal-review-section {
+  margin-bottom: 2.5rem;
+  background: rgba(30, 30, 45, 0.7);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  font-family: var(--font-accent);
+  font-size: 1.5rem;
+  margin: 0;
+  color: white;
+}
+
+.review-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.review-actions .button {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.review-actions .button.outline {
+  background: transparent;
+  border: 1px solid rgba(124, 58, 237, 0.5);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.review-actions .button.danger {
+  background: rgba(227, 53, 13, 0.8);
+  color: white;
+  border: 1px solid rgba(227, 53, 13, 0.3);
+}
+
+.review-actions .button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.review-actions .button.outline:hover {
+  background: rgba(124, 58, 237, 0.1);
+  border-color: rgba(124, 58, 237, 0.7);
+}
+
+.review-actions .button.danger:hover {
+  background: rgba(227, 53, 13, 0.9);
+}
+
+.review-content {
+  background: rgba(20, 20, 35, 0.6);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.review-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.review-rating {
+  font-weight: bold;
+  color: #ffcb05;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review-rating::before {
+  content: "★";
+}
+
+.review-date {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+.review-text {
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Game info section */
+.game-info-section {
+  background: rgba(30, 30, 45, 0.7);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.game-info-section h2 {
+  font-family: var(--font-accent);
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: white;
+  position: relative;
+  display: inline-block;
+}
+
+.game-info-section h2::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #4dad5b, #7c3aed);
+  opacity: 0.7;
+}
+
+.game-summary {
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1.5rem;
+}
+
+.no-info {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.game-meta-info {
+  background: rgba(20, 20, 35, 0.6);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 0.75rem;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-weight: bold;
+  width: 100px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.info-value {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Enhanced review form */
+.review-form {
+  background: rgba(20, 20, 35, 0.7);
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.review-form h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: white;
+  font-size: 1.3rem;
+}
+
+.review-error {
+  color: #e3350d;
+  background-color: rgba(227, 53, 13, 0.1);
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(227, 53, 13, 0.3);
+}
+
+.review-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.review-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.review-form textarea {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(15, 15, 25, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-family: inherit;
+  resize: vertical;
+  color: white;
+  font-size: 1rem;
+  min-height: 150px;
+  transition: all 0.3s;
+}
+
+.review-form textarea:focus {
+  outline: none;
+  border-color: #4dad5b;
+  box-shadow: 0 0 15px rgba(77, 173, 91, 0.3);
+}
+
+.review-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.review-form-actions .button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.review-form-actions .button.primary {
+  background: rgba(77, 173, 91, 0.8);
+  color: white;
+  border: 1px solid rgba(77, 173, 91, 0.3);
+}
+
+.review-form-actions .button.secondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.review-form-actions .button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.review-form-actions .button.primary:hover {
+  background: rgba(77, 173, 91, 0.9);
+}
+
+.review-form-actions .button.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Rating input styling */
+.rating-input {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.rating-stars {
+  display: flex;
+}
+
+.rating-star {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.2);
+  padding: 0 0.25rem;
+  transition: color 0.2s;
+}
+
+.rating-star.filled {
+  color: #ffcb05;
+}
+
+.rating-star:hover {
+  color: #ffcb05;
+  transform: scale(1.2);
+}
+
+.rating-value {
+  font-weight: bold;
+  color: white;
+  background: rgba(255, 203, 5, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 203, 5, 0.3);
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .reviews-page {
-    padding: var(--spacing-md);
+    padding: 1.5rem 1rem;
   }
 
   .reviews-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-md);
+    gap: 1rem;
+  }
+
+  .reviews-header .back-link {
+    align-self: flex-start;
+  }
+
+  .review-actions {
+    flex-wrap: wrap;
+  }
+
+  .review-meta {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }
