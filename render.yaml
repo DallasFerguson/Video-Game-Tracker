@@ -1,0 +1,34 @@
+services:
+  # Backend API service
+  - type: web
+    name: gametracker-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.production.js
+    envVars:
+      - key: PORT
+        value: 3002
+      - key: NODE_ENV
+        value: production
+      - key: IGDB_CLIENT_ID
+        value: s0te8cn7hxx4vmu6iys7vf4rahiq70
+      - key: IGDB_CLIENT_SECRET
+        value: go9eh1a4d1q1phpbv6v8xdgp80otcn
+      - key: CORS_ORIGIN
+        value: https://gametracker-frontend.onrender.com
+
+  # Frontend static site
+  - type: static
+    name: gametracker-frontend
+    env: static
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/build
+    envVars:
+      - key: REACT_APP_API_BASE_URL
+        value: https://gametracker-api.onrender.com/api
+      - key: REACT_APP_SITE_NAME
+        value: GameTracker
