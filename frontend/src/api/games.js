@@ -1,11 +1,11 @@
 //src/api/games.js
 import axios from 'axios';
 
-// Use environment variable with fallback for local development
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3002/api';
+// HARDCODED API URL - no environment variables
+const API_BASE_URL = 'https://gametracker-api-5cvd.onrender.com/api';
 
 // Log the API URL for debugging
-console.log('API Base URL:', API_BASE_URL);
+console.log('API Base URL (hardcoded):', API_BASE_URL);
 
 //configure axios instance with proper error handling
 const gamesApi = axios.create({
