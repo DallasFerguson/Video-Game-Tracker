@@ -1,9 +1,10 @@
 //src/api/games.js
 import axios from 'axios';
+import config from '../config';
 
 //configure axios instance with proper error handling
 const gamesApi = axios.create({
-  baseURL: 'http://localhost:3002/api', //updated to port 3002
+  baseURL: config.api.base,
   timeout: 10000, //10 second timeout
   headers: {
     'Content-Type': 'application/json'
@@ -18,7 +19,9 @@ const gamesApi = axios.create({
  */
 export const searchGames = async (query, limit = 10) => {
   try {
-    const response = await gamesApi.get('/games/search', {
+    console.log(`Searching games with query: ${query} at URL: ${config.api.games.search}`);
+    
+    const response = await axios.get(config.api.games.search, {
       params: { query, limit }
     });
     
@@ -42,7 +45,9 @@ export const searchGames = async (query, limit = 10) => {
  */
 export const getGameDetails = async (gameId) => {
   try {
-    const response = await gamesApi.get(`/games/${gameId}`);
+    console.log(`Fetching game details for ID: ${gameId} at URL: ${config.api.games.details(gameId)}`);
+    
+    const response = await axios.get(config.api.games.details(gameId));
     return {
       id: response.data.id,
       name: response.data.name,
@@ -67,7 +72,9 @@ export const getGameDetails = async (gameId) => {
  */
 export const getTrendingGames = async (limit = 5) => {
   try {
-    const response = await gamesApi.get('/games/trending', {
+    console.log(`Fetching trending games at URL: ${config.api.games.trending}`);
+    
+    const response = await axios.get(config.api.games.trending, {
       params: { limit }
     });
     return response.data.map(game => ({
