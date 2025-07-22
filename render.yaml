@@ -6,7 +6,7 @@ services:
     region: oregon
     plan: free
     buildCommand: cd backend && npm install
-    startCommand: cd backend && node server.production.js
+    startCommand: cd backend && node server.js
     envVars:
       - key: PORT
         value: 3002
@@ -25,10 +25,5 @@ services:
     env: static
     region: oregon
     plan: free
-    buildCommand: cd frontend && npm install && npm run build
+    buildCommand: cd frontend && REACT_APP_API_BASE_URL=https://gametracker-api.onrender.com/api npm install && npm run build
     staticPublishPath: ./frontend/build
-    envVars:
-      - key: REACT_APP_API_BASE_URL
-        value: https://gametracker-api.onrender.com/api
-      - key: REACT_APP_SITE_NAME
-        value: GameTracker
