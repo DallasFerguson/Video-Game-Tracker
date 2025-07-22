@@ -14,18 +14,7 @@ import Wishlist from './pages/Wishlist/Wishlist';
 import GameDetail from './pages/Games/GameDetail/GameDetail';
 import Search from './pages/Games/Search/Search';
 import Trending from './pages/Games/Trending/Trending';
-import Reviews from './pages/Reviews/Reviews'; 
-import NotFound from './pages/NotFound/NotFound';
-import './App.css';
-
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Layout />,
-    children: [
-      { index: true, element: <Home /> },
-      { path: 'games/:id', element: <GameDetail /> },
+@@ -25,6 +29,9 @@
       { path: 'search', element: <Search /> },
       { path: 'trending', element: <Trending /> },
       { path: 'games/:id/reviews', element: <Reviews /> },
@@ -35,15 +24,7 @@ const router = createBrowserRouter([
       // 404
       { path: '*', element: <NotFound /> }
     ]
-  }
-], {
-  future: {
-    v7_startTransition: true,
-    v7_relativeSplatPath: true
-  }
-});
-
-function App() {
+@@ -40,14 +47,16 @@
   return (
     <ThemeProvider>
       <NotificationProvider>
