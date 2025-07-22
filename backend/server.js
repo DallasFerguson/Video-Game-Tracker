@@ -1,4 +1,4 @@
-// backend/server.js
+// backend/server.js - API-only server
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -7,11 +7,11 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-// CORS configuration - allow frontend
+// CORS configuration - allow all origins
 app.use(cors({
-  origin: '*', // Allow all origins for now
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 // Add CORS headers manually as backup
@@ -19,6 +19,18 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  next();
+});
+
+// Log all requests for debugging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url} from ${req.headers.origin || 'unknown'}`);
   next();
 });
 
@@ -32,6 +44,7 @@ let tokenExpiration = null;
 // Function to get a new IGDB API token
 async function getIGDBToken() {
   try {
+    console.log('Getting new IGDB token...');
     const response = await axios.post(
       'https://id.twitch.tv/oauth2/token',
       null,
@@ -45,6 +58,7 @@ async function getIGDBToken() {
     );
     
     igdbToken = response.data.access_token;
+    // Set expiration to 1 hour before actual expiration for safety
     tokenExpiration = Date.now() + (response.data.expires_in - 3600) * 1000;
     
     console.log('IGDB token acquired successfully');
@@ -55,7 +69,7 @@ async function getIGDBToken() {
   }
 }
 
-// Ensure valid token
+// Function to ensure we have a valid token
 async function ensureValidToken() {
   if (!igdbToken || !tokenExpiration || Date.now() >= tokenExpiration) {
     return getIGDBToken();
@@ -65,20 +79,25 @@ async function ensureValidToken() {
 
 // IGDB API request function
 async function queryIGDB(endpoint, query) {
-  const token = await ensureValidToken();
-  
-  const response = await axios({
-    url: `https://api.igdb.com/v4/${endpoint}`,
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Client-ID': process.env.IGDB_CLIENT_ID,
-      'Authorization': `Bearer ${token}`
-    },
-    data: query
-  });
-  
-  return response.data;
+  try {
+    const token = await ensureValidToken();
+    
+    const response = await axios({
+      url: `https://api.igdb.com/v4/${endpoint}`,
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Client-ID': process.env.IGDB_CLIENT_ID,
+        'Authorization': `Bearer ${token}`
+      },
+      data: query
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error(`Error querying IGDB (${endpoint}):`, error.message);
+    throw error;
+  }
 }
 
 // Health check endpoint
@@ -96,6 +115,8 @@ app.get('/api/games/search', async (req, res) => {
   try {
     const query = req.query.query || '';
     const limit = parseInt(req.query.limit) || 10;
+    
+    console.log(`Searching for games with query: "${query}" and limit: ${limit}`);
     
     const igdbQuery = `
       search "${query}";
@@ -117,6 +138,8 @@ app.get('/api/games/trending', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 5;
     
+    console.log(`Fetching trending games with limit: ${limit}`);
+    
     const igdbQuery = `
       fields name, cover.image_id, first_release_date, rating;
       where rating > 75;
@@ -137,6 +160,8 @@ app.get('/api/games/:id', async (req, res) => {
   try {
     const gameId = req.params.id;
     
+    console.log(`Fetching details for game ID: ${gameId}`);
+    
     const igdbQuery = `
       fields name, summary, genres.name, platforms.name, cover.image_id, screenshots.image_id, rating, first_release_date;
       where id = ${gameId};
@@ -155,8 +180,24 @@ app.get('/api/games/:id', async (req, res) => {
   }
 });
 
+// Catch-all for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({
+    error: "API endpoint not found",
+    requestedPath: req.originalUrl,
+    availableEndpoints: [
+      "/api/health",
+      "/api/games/trending",
+      "/api/games/search",
+      "/api/games/:id"
+    ]
+  });
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`API server running on port ${PORT}`);
+  console.log(`API available at: http://localhost:${PORT}/api`);
+  console.log(`CORS: Allowing all origins (*)`);
   console.log(`IGDB API configuration: ${!!(process.env.IGDB_CLIENT_ID && process.env.IGDB_CLIENT_SECRET)}`);
 });
