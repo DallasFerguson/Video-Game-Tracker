@@ -6,7 +6,7 @@ services:
     region: oregon
     plan: free
     buildCommand: cd backend && npm install
-    startCommand: cd backend && node server.js
+    startCommand: cd backend && node server.api.js
     envVars:
       - key: PORT
         value: 3002
@@ -17,7 +17,7 @@ services:
       - key: IGDB_CLIENT_SECRET
         value: go9eh1a4d1q1phpbv6v8xdgp80otcn
       - key: CORS_ORIGIN
-        value: https://gametracker-frontend.onrender.com
+        value: https://gametracker-frontend-i9yv.onrender.com
 
   # Frontend static site
   - type: static
@@ -25,5 +25,8 @@ services:
     env: static
     region: oregon
     plan: free
-    buildCommand: cd frontend && REACT_APP_API_BASE_URL=https://gametracker-api.onrender.com/api npm install && npm run build
+    buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: ./frontend/build
+    envVars:
+      - key: REACT_APP_API_BASE_URL
+        value: https://gametracker-api.onrender.com/api
