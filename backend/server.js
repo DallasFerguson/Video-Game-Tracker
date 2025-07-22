@@ -7,7 +7,7 @@ const app = express();
 
 //middleware
 app.use(cors({
-  origin: 'http://localhost:3000', //my frontend URL
+  origin: 'https://gametracker-frontend-i9yv.onrender.com',
   credentials: true
 }));
 app.use(express.json());
