@@ -1,28 +1,14 @@
-import { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getGameDetails } from '../../../api/games';
-import { LibraryContext } from '../../../contexts/LibraryContext';
-import { WishlistContext } from '../../../contexts/WishlistContext';
-import { NotificationContext } from '../../../contexts/NotificationContext';
-import GameCover from '../../../components/games/GameCover/GameCover'; // Import the new component
-import GameStatus from '../../../components/games/GameStatus/GameStatus';
-import Button from '../../../components/ui/Button/Button';
-import LoadingSpinner from '../../../components/ui/LoadingSpinner/LoadingSpinner';
-import './GameDetail.css';
+// GameDetail.jsx
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { getGameDetails } from '../api/games';
+import './GameDetail.css'; // Adjust to your actual CSS file path
 
 const GameDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { library, addToLibrary, updateInLibrary } = useContext(LibraryContext);
-  const { wishlist, addToWishlist } = useContext(WishlistContext);
-  const { notify } = useContext(NotificationContext);
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Find this game in library or wishlist if it exists
-  const libraryEntry = library.find(item => item.gameId === parseInt(id));
-  const isInWishlist = wishlist.some(item => item.gameId === parseInt(id));
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchGameDetails = async () => {
@@ -30,184 +16,163 @@ const GameDetail = () => {
         setLoading(true);
         const gameData = await getGameDetails(id);
         setGame(gameData);
+        setError(null);
       } catch (err) {
-        setError(err.message || 'Failed to load game details');
-        notify?.('Failed to load game details', 'error');
+        console.error("Error fetching game details:", err);
+        setError("Failed to load game details. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchGameDetails();
-  }, [id, notify]);
+  }, [id]);
 
-  //helper function to get proper cover URL for adding to library/wishlist
-  const getProcessedCoverUrl = (cover) => {
-    if (!cover || !cover.url) return null;
+  // Function to format date
+  const formatDate = (timestamp) => {
+    if (!timestamp) return 'Unknown';
     
-    //if image_id is available, use that
-    if (cover.image_id) {
-      return `https://images.igdb.com/igdb/image/upload/t_cover_big/${cover.image_id}.jpg`;
-    }
-    
-    //otherwise use url and try to get a better version
-    let url = cover.url;
-    if (url.startsWith('//')) url = `https:${url}`;
-    return url.replace('t_thumb', 't_cover_big');
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
   };
 
-  const handleAddToLibrary = (status = 'plan_to_play') => {
-    try {
-      //prepare game data for library
-      const gameData = {
-        gameId: parseInt(id),
-        name: game.name,
-        cover: getProcessedCoverUrl(game.cover),
-        status,
-        rating: 0,
-        playtime: 0
-      };
-      
-      addToLibrary(gameData);
-    } catch (err) {
-      notify?.('Failed to add game to library', 'error');
+  // Function to safely get the cover image URL
+  const getCoverUrl = (cover) => {
+    if (!cover || !cover.image_id) {
+      return 'https://via.placeholder.com/264x374?text=No+Cover';
     }
+    return `https://images.igdb.com/igdb/image/upload/t_cover_big/${cover.image_id}.jpg`;
   };
 
-  const handleAddToWishlist = () => {
-    try {
-      //prepare game data for wishlist
-      const gameData = {
-        gameId: parseInt(id),
-        name: game.name,
-        cover: getProcessedCoverUrl(game.cover)
-      };
-      
-      addToWishlist(gameData);
-    } catch (err) {
-      notify?.('Failed to add game to wishlist', 'error');
+  // Function to safely get screenshot URLs
+  const getScreenshotUrl = (screenshot) => {
+    if (!screenshot || !screenshot.image_id) {
+      return 'https://via.placeholder.com/1280x720?text=No+Screenshot';
     }
+    return `https://images.igdb.com/igdb/image/upload/t_screenshot_big/${screenshot.image_id}.jpg`;
   };
 
   if (loading) {
     return (
-      <div className="game-detail-loading">
-        <LoadingSpinner size="large" />
+      <div className="game-detail loading">
+        <div className="container">
+          <h2>Loading game details...</h2>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="game-detail-error">
-        <p>{error}</p>
-        <Button onClick={() => navigate(-1)}>Go Back</Button>
+      <div className="game-detail error">
+        <div className="container">
+          <h2>Error</h2>
+          <p>{error}</p>
+          <Link to="/" className="back-button">Back to Home</Link>
+        </div>
       </div>
     );
   }
 
   if (!game) {
     return (
-      <div className="game-detail-not-found">
-        <h2>Game not found</h2>
-        <Button onClick={() => navigate('/')}>Return Home</Button>
+      <div className="game-detail not-found">
+        <div className="container">
+          <h2>Game Not Found</h2>
+          <p>The game you're looking for doesn't exist or has been removed.</p>
+          <Link to="/" className="back-button">Back to Home</Link>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="game-detail">
-      <div className="game-header">
-        <div className="game-cover-container">
-          {/*Use the new GameCover component instead of directly rendering an img tag*/}
-          <GameCover 
-            cover={game.cover}
-            name={game.name}
-            size="large"
-          />
-        </div>
-
-        <div className="game-info">
-          <h1>{game.name}</h1>
-          
+      <div className="container">
+        <div className="game-header">
+          <h1>{game.name || 'Unknown Game'}</h1>
           <div className="game-meta">
-            {game.first_release_date && (
-              <span className="release-date">
-                {new Date(game.first_release_date * 1000).getFullYear()}
+            <span className="release-date">
+              Released: {formatDate(game.first_release_date)}
+            </span>
+            {game.rating && (
+              <span className="rating">
+                Rating: {Math.round(game.rating)}%
               </span>
             )}
-            {game.genres?.length > 0 && (
-              <span className="genres">
-                {game.genres.map(g => g.name).join(', ')}
-              </span>
-            )}
-            {game.platforms?.length > 0 && (
-              <span className="platforms">
-                {game.platforms.map(p => p.name).join(', ')}
-              </span>
-            )}
-          </div>
-
-          <div className="game-actions">
-            {libraryEntry ? (
-              <GameStatus 
-                gameId={parseInt(id)} 
-                initialStatus={libraryEntry.status}
-                onUpdate={(newStatus) => {
-                  updateInLibrary(parseInt(id), { status: newStatus });
-                  notify?.('Status updated', 'success');
-                }}
-              />
-            ) : (
-              <Button 
-                variant="primary" 
-                onClick={() => handleAddToLibrary()}
-              >
-                Add to Library
-              </Button>
-            )}
-
-            {!isInWishlist && !libraryEntry && (
-              <Button 
-                variant="secondary" 
-                onClick={handleAddToWishlist}
-              >
-                Add to Wishlist
-              </Button>
-            )}
-
-            <Link to={`/games/${id}/reviews`}>
-              <Button variant="outline">
-                Reviews
-              </Button>
-            </Link>
           </div>
         </div>
-      </div>
 
-      <div className="game-content">
-        <section className="game-section">
-          <h2>About</h2>
-          <p className="game-summary">
-            {game.summary || 'No description available.'}
-          </p>
-        </section>
+        <div className="game-content">
+          <div className="game-cover">
+            <img 
+              src={getCoverUrl(game.cover)} 
+              alt={game.name || 'Game cover'} 
+              className="cover-image" 
+            />
+          </div>
 
-        {game.screenshots?.length > 0 && (
-          <section className="game-section">
-            <h2>Screenshots</h2>
-            <div className="screenshots-grid">
-              {game.screenshots.map((screenshot, index) => (
+          <div className="game-info">
+            <div className="game-summary">
+              <h3>Summary</h3>
+              <p>{game.summary || 'No summary available for this game.'}</p>
+            </div>
+
+            <div className="game-details">
+              <div className="genres">
+                <h3>Genres</h3>
+                {game.genres && game.genres.length > 0 ? (
+                  <ul>
+                    {game.genres.map((genre, index) => (
+                      <li key={index}>{genre.name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No genres available</p>
+                )}
+              </div>
+
+              <div className="platforms">
+                <h3>Platforms</h3>
+                {game.platforms && game.platforms.length > 0 ? (
+                  <ul>
+                    {game.platforms.map((platform, index) => (
+                      <li key={index}>{platform.name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No platforms available</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="game-screenshots">
+          <h3>Screenshots</h3>
+          <div className="screenshot-grid">
+            {game.screenshots && game.screenshots.length > 0 ? (
+              game.screenshots.map((screenshot, index) => (
                 <div key={index} className="screenshot">
                   <img 
-                    src={`https:${screenshot.url.replace('t_thumb', 't_screenshot_med')}`} 
-                    alt={`${game.name} screenshot ${index + 1}`} 
+                    src={getScreenshotUrl(screenshot)} 
+                    alt={`Screenshot ${index + 1}`} 
                   />
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+              ))
+            ) : (
+              <p>No screenshots available</p>
+            )}
+          </div>
+        </div>
+
+        <div className="navigation">
+          <Link to="/" className="back-button">Back to Home</Link>
+        </div>
       </div>
     </div>
   );
