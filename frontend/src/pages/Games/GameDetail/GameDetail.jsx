@@ -1,8 +1,8 @@
 // GameDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getGameDetails } from '../../../api/games'; // Updated import path
-import './GameDetail.css'; // Adjust if your CSS file has a different path
+import { getGameDetails } from '../../../api/games';
+import './GameDetail.css';
 
 const GameDetail = () => {
   const [game, setGame] = useState(null);
@@ -43,7 +43,7 @@ const GameDetail = () => {
   // Function to safely get the cover image URL
   const getCoverUrl = (cover) => {
     if (!cover || !cover.image_id) {
-      return 'https://via.placeholder.com/264x374?text=No+Cover';
+      return 'https://via.placeholder.com/200x280?text=No+Cover';
     }
     return `https://images.igdb.com/igdb/image/upload/t_cover_big/${cover.image_id}.jpg`;
   };
@@ -51,9 +51,9 @@ const GameDetail = () => {
   // Function to safely get screenshot URLs
   const getScreenshotUrl = (screenshot) => {
     if (!screenshot || !screenshot.image_id) {
-      return 'https://via.placeholder.com/1280x720?text=No+Screenshot';
+      return 'https://via.placeholder.com/640x360?text=No+Screenshot';
     }
-    return `https://images.igdb.com/igdb/image/upload/t_screenshot_big/${screenshot.image_id}.jpg`;
+    return `https://images.igdb.com/igdb/image/upload/t_screenshot_med/${screenshot.image_id}.jpg`;
   };
 
   if (loading) {
@@ -113,6 +113,7 @@ const GameDetail = () => {
               src={getCoverUrl(game.cover)} 
               alt={game.name || 'Game cover'} 
               className="cover-image" 
+              style={{ maxWidth: '200px', height: 'auto' }} // Smaller cover image
             />
           </div>
 
@@ -154,13 +155,14 @@ const GameDetail = () => {
 
         <div className="game-screenshots">
           <h3>Screenshots</h3>
-          <div className="screenshot-grid">
+          <div className="screenshot-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '15px' }}>
             {game.screenshots && game.screenshots.length > 0 ? (
               game.screenshots.map((screenshot, index) => (
                 <div key={index} className="screenshot">
                   <img 
                     src={getScreenshotUrl(screenshot)} 
-                    alt={`Screenshot ${index + 1}`} 
+                    alt={`Screenshot ${index + 1}`}
+                    style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }} // Smaller screenshots
                   />
                 </div>
               ))
