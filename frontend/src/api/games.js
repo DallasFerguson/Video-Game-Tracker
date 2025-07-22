@@ -1,10 +1,15 @@
 //src/api/games.js
 import axios from 'axios';
-import config from '../config';
+
+// Use environment variable with fallback for local development
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3002/api';
+
+// Log the API URL for debugging
+console.log('API Base URL:', API_BASE_URL);
 
 //configure axios instance with proper error handling
 const gamesApi = axios.create({
-  baseURL: config.api.base,
+  baseURL: API_BASE_URL,
   timeout: 10000, //10 second timeout
   headers: {
     'Content-Type': 'application/json'
@@ -19,9 +24,7 @@ const gamesApi = axios.create({
  */
 export const searchGames = async (query, limit = 10) => {
   try {
-    console.log(`Searching games with query: ${query} at URL: ${config.api.games.search}`);
-    
-    const response = await axios.get(config.api.games.search, {
+    const response = await gamesApi.get('/games/search', {
       params: { query, limit }
     });
     
@@ -45,9 +48,7 @@ export const searchGames = async (query, limit = 10) => {
  */
 export const getGameDetails = async (gameId) => {
   try {
-    console.log(`Fetching game details for ID: ${gameId} at URL: ${config.api.games.details(gameId)}`);
-    
-    const response = await axios.get(config.api.games.details(gameId));
+    const response = await gamesApi.get(`/games/${gameId}`);
     return {
       id: response.data.id,
       name: response.data.name,
@@ -72,9 +73,7 @@ export const getGameDetails = async (gameId) => {
  */
 export const getTrendingGames = async (limit = 5) => {
   try {
-    console.log(`Fetching trending games at URL: ${config.api.games.trending}`);
-    
-    const response = await axios.get(config.api.games.trending, {
+    const response = await gamesApi.get('/games/trending', {
       params: { limit }
     });
     return response.data.map(game => ({
