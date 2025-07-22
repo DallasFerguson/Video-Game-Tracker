@@ -2,32 +2,50 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-//initialize Express
+// Initialize Express
 const app = express();
 
-//middleware
+// Set up CORS to allow ALL origins temporarily
 app.use(cors({
-  origin: 'https://gametracker-frontend-i9yv.onrender.com',
-  credentials: true
+  origin: '*', // Allow requests from any origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json());
 
-//simple health check route
+// Add manual CORS headers for additional safety
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  next();
+});
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Health check route
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
-//routes - only using the games route for IGDB API access
+// Routes - only using the games route for IGDB API access
 app.use('/api/games', require('./routes/games'));
 
-//error handling middleware
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Server Error' });
 });
 
-//define PORT - using 3002 to avoid conflicts
+// Define PORT
 const PORT = process.env.PORT || 3002;
 
-//start server
+// Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
