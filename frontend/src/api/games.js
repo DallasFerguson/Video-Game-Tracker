@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // OPTION 1: Hardcoded production URL
-const API_BASE_URL = 'https://gametracker-api-5cvd.onrender.com/api';
+const API_BASE_URL = 'https://gametracker-api.onrender.com/api';
 
 // Log the API URL for debugging
 console.log('API Base URL:', API_BASE_URL);
