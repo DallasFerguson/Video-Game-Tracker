@@ -1,8 +1,8 @@
 // GameDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getGameDetails } from '../api/games';
-import './GameDetail.css'; // Adjust to your actual CSS file path
+import { getGameDetails } from '../../../api/games'; // Updated import path
+import './GameDetail.css'; // Adjust if your CSS file has a different path
 
 const GameDetail = () => {
   const [game, setGame] = useState(null);
