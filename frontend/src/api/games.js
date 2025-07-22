@@ -1,11 +1,11 @@
 //src/api/games.js
 import axios from 'axios';
 
-// HARDCODED API URL - no environment variables
+// OPTION 1: Hardcoded production URL
 const API_BASE_URL = 'https://gametracker-api-5cvd.onrender.com/api';
 
 // Log the API URL for debugging
-console.log('API Base URL (hardcoded):', API_BASE_URL);
+console.log('API Base URL:', API_BASE_URL);
 
 //configure axios instance with proper error handling
 const gamesApi = axios.create({
