@@ -1,10 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// Import your components (paths may vary)
-import Header from './components/YourHeaderComponent';
-import Home from './pages/Home';
-import Search from './pages/Search';
-import GameDetail from './pages/Games/GameDetail';
+import Header from './components/Header/Header'; // Import the new Header component
+import Home from './pages/Home/Home'; // Adjust path as needed
+import Search from './pages/Search/Search'; // Adjust path as needed
+import GameDetail from './pages/Games/GameDetail/GameDetail'; // Adjust path as needed
 
 function App() {
   return (
@@ -16,7 +15,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<Search />} />
             <Route path="/game/:id" element={<GameDetail />} />
-            {/* REMOVED: Library, Wishlist, and Review routes */}
+            {/* No library or wishlist routes */}
           </Routes>
         </main>
       </div>
