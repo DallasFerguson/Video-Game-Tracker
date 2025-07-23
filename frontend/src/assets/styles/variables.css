@@ -7,13 +7,14 @@
   --accent-color-3: #e3350d; /* Vibrant red */
   --accent-color-4: #ff9500; /* Warm orange */
   
-  --dark-color: #121212; /* Nearly black for backgrounds */
-  --dark-color-2: #1e1e2d; /* Slightly lighter dark for elements */
-  --dark-color-3: #2a2a3c; /* Even lighter for cards and containers */
+  /* LIGHT MODE by default */
+  --dark-color: #333333; /* Changed from #121212 to a lighter dark */
+  --dark-color-2: #444455; /* Slightly lighter dark for elements */
+  --dark-color-3: #555566; /* Even lighter for cards and containers */
   
-  --light-color: #f8f8f8; /* Nearly white for text */
-  --light-color-2: rgba(255, 255, 255, 0.7); /* Semi-transparent white for secondary text */
-  --light-color-3: rgba(255, 255, 255, 0.5); /* More transparent white for tertiary elements */
+  --light-color: #f8f8f8; /* Nearly white for backgrounds */
+  --light-color-2: rgba(255, 255, 255, 0.7); /* Semi-transparent white */
+  --light-color-3: rgba(255, 255, 255, 0.5); /* More transparent white */
   
   --danger-color: #e3350d; /* Error red */
   --success-color: #4dad5b; /* Success green */
@@ -91,7 +92,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(30, 30, 45, 0.6);
+  background: rgba(200, 200, 210, 0.6);  /* Lighter track color */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -133,88 +134,10 @@ input:focus, select:focus, textarea:focus {
   outline: none;
 }
 
-/* Animation keyframes that can be used globally */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.7; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes slideInUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideInDown {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideInLeft {
-  from { transform: translateX(-20px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(20px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-/* Utility classes */
-.text-gradient {
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color-1));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.glass-effect {
-  background: rgba(30, 30, 45, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: var(--shadow-lg);
-}
-
-.floating {
-  animation: float 4s infinite ease-in-out;
-}
-
-.pulsing {
-  animation: pulse 2s infinite ease-in-out;
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease forwards;
-}
-
-.slide-in-up {
-  animation: slideInUp 0.3s ease forwards;
-}
-
-/* Dark theme specific adjustments */
-[data-theme="dark"] {
-  --primary-color: #3a85cb; /* Slightly lighter blue for dark theme */
-  --secondary-color: #ffdb15; /* Slightly brighter yellow for dark theme */
-}
-
-/* Base styles for all pages */
+/* Base styles for all pages - LIGHT MODE DEFAULT */
 body {
-  background-color: var(--dark-color);
-  color: var(--light-color);
+  background-color: var(--light-color);
+  color: var(--dark-color);
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -230,4 +153,20 @@ img {
 /* Fix for overscroll effects */
 html {
   overflow-x: hidden;
+}
+
+/* Dark theme specific adjustments - only apply when data-theme="dark" is present */
+[data-theme="dark"] {
+  --primary-color: #3a85cb; /* Slightly lighter blue for dark theme */
+  --secondary-color: #ffdb15; /* Slightly brighter yellow for dark theme */
+  
+  /* Override background and text colors for dark theme */
+  background-color: #121212;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+/* Only in dark theme, make the body dark */
+[data-theme="dark"] body {
+  background-color: #121212;
+  color: rgba(255, 255, 255, 0.87);
 }
