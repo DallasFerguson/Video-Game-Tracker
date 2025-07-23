@@ -1,116 +1,91 @@
-import { createContext, useState, useEffect, useCallback, useContext } from 'react';
-import { getLibrary, saveLibrary } from '../utils/localStorageUtils';
-import { NotificationContext } from './NotificationContext';
+// LibraryContext.js
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
-export const LibraryContext = createContext();
+// Create the context
+const LibraryContext = createContext();
 
+// Create a provider component
 export const LibraryProvider = ({ children }) => {
+  // State for library games
   const [library, setLibrary] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { notify } = useContext(NotificationContext || { notify: () => {} });
-
-  const fetchLibrary = useCallback(async () => {
-    try {
-      setLoading(true);
-      const libraryData = getLibrary();
-      setLibrary(libraryData);
-      setError(null);
-    } catch (err) {
-      setError(err.message);
-      if (notify) notify('Failed to load your library', 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [notify]);
-
+  
+  // State for wishlist games
+  const [wishlist, setWishlist] = useState([]);
+  
+  // Load from localStorage on mount
   useEffect(() => {
-    fetchLibrary();
-  }, [fetchLibrary]);
-
-  const addToLibrary = useCallback((game) => {
     try {
-      // Add timestamp and default values
-      const newGame = {
-        ...game,
-        addedDate: new Date().toISOString(),
-        lastUpdated: new Date().toISOString(),
-        status: game.status || 'plan_to_play',
-        playtime: game.playtime || 0
-      };
+      const storedLibrary = localStorage.getItem('library');
+      const storedWishlist = localStorage.getItem('wishlist');
       
-      // Check if game already exists
-      if (library.some(item => item.gameId === game.gameId)) {
-        if (notify) notify('Game already in your library', 'error');
-        return;
-      }
-      
-      const updatedLibrary = [...library, newGame];
-      setLibrary(updatedLibrary);
-      saveLibrary(updatedLibrary);
-      if (notify) notify(`${game.name} added to your library`, 'success');
-      return newGame;
+      if (storedLibrary) setLibrary(JSON.parse(storedLibrary));
+      if (storedWishlist) setWishlist(JSON.parse(storedWishlist));
     } catch (error) {
-      console.error('Error adding to library:', error);
-      if (notify) notify('Failed to add game to library', 'error');
+      console.error('Error loading from localStorage:', error);
     }
-  }, [library, notify]);
-
-  const removeFromLibrary = useCallback((gameId) => {
+  }, []);
+  
+  // Save to localStorage when state changes
+  useEffect(() => {
     try {
-      const game = library.find(game => game.gameId === gameId);
-      if (!game) {
-        if (notify) notify('Game not found in your library', 'error');
-        return;
-      }
-      
-      const updatedLibrary = library.filter(game => game.gameId !== gameId);
-      setLibrary(updatedLibrary);
-      saveLibrary(updatedLibrary);
-      if (notify) notify(`${game.name} removed from your library`, 'success');
+      localStorage.setItem('library', JSON.stringify(library));
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
     } catch (error) {
-      console.error('Error removing from library:', error);
-      if (notify) notify('Failed to remove game from library', 'error');
+      console.error('Error saving to localStorage:', error);
     }
-  }, [library, notify]);
-
-  const updateInLibrary = useCallback((gameId, updates) => {
-    try {
-      const gameIndex = library.findIndex(game => game.gameId === gameId);
-      if (gameIndex === -1) {
-        if (notify) notify('Game not found in your library', 'error');
-        return;
-      }
-      
-      const updatedGame = {
-        ...library[gameIndex],
-        ...updates,
-        lastUpdated: new Date().toISOString()
-      };
-      
-      const updatedLibrary = [...library];
-      updatedLibrary[gameIndex] = updatedGame;
-      
-      setLibrary(updatedLibrary);
-      saveLibrary(updatedLibrary);
-      if (notify) notify('Game updated successfully', 'success');
-      return updatedGame;
-    } catch (error) {
-      console.error('Error updating library:', error);
-      if (notify) notify('Failed to update game', 'error');
+  }, [library, wishlist]);
+  
+  // Add a game to library
+  const addToLibrary = (game) => {
+    if (!library.some(item => item.id === game.id)) {
+      setLibrary([...library, game]);
     }
-  }, [library, notify]);
-
+  };
+  
+  // Remove a game from library
+  const removeFromLibrary = (gameId) => {
+    setLibrary(library.filter(game => game.id !== gameId));
+  };
+  
+  // Add a game to wishlist
+  const addToWishlist = (game) => {
+    if (!wishlist.some(item => item.id === game.id)) {
+      setWishlist([...wishlist, game]);
+    }
+  };
+  
+  // Remove a game from wishlist
+  const removeFromWishlist = (gameId) => {
+    setWishlist(wishlist.filter(game => game.id !== gameId));
+  };
+  
+  // Check if a game is in library
+  const isInLibrary = (gameId) => {
+    return library.some(game => game.id === gameId);
+  };
+  
+  // Check if a game is in wishlist
+  const isInWishlist = (gameId) => {
+    return wishlist.some(game => game.id === gameId);
+  };
+  
+  // Create a notification function that does nothing
+  // This is to satisfy components that expect this function
+  const notify = () => {};
+  
+  // Value object to be provided
   const value = {
     library,
-    loading,
-    error,
-    fetchLibrary,
+    wishlist,
     addToLibrary,
     removeFromLibrary,
-    updateInLibrary
+    addToWishlist,
+    removeFromWishlist,
+    isInLibrary,
+    isInWishlist,
+    notify // Add this to fix the destructuring error
   };
-
+  
   return (
     <LibraryContext.Provider value={value}>
       {children}
@@ -118,12 +93,11 @@ export const LibraryProvider = ({ children }) => {
   );
 };
 
-export function useLibrary() {
+// Custom hook to use the library context
+export const useLibrary = () => {
   const context = useContext(LibraryContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useLibrary must be used within a LibraryProvider');
   }
   return context;
-}
-
-export default useLibrary;
+};
