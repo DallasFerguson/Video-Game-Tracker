@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/header';
 import Home from './pages/Home/Home';
-import Search from './pages/Search/Search';
+import Search from './pages/Games/Search/Search';
 import GameDetail from './pages/Games/GameDetail/GameDetail';
 import Library from './pages/Library/Library';
 import Wishlist from './pages/Wishlist/Wishlist';
