@@ -2,7 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 // Create the context
-const LibraryContext = createContext();
+export const LibraryContext = createContext(); // Add "export" here
 
 // Create a provider component
 export const LibraryProvider = ({ children }) => {
