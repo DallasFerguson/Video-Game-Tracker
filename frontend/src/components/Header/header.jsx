@@ -7,12 +7,12 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <Link to="/" className="logo">GameTracker</Link>
-        
-        <nav className="nav">
+
+        <nav className="main-nav">
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/search">Search</Link></li>
-            {/* Remove Library and Wishlist links */}
+            {/* No library or wishlist links */}
           </ul>
         </nav>
       </div>
