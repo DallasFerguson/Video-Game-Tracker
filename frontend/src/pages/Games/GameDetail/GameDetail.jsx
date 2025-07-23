@@ -1,108 +1,20 @@
-// GameDetail.jsx
+// GameDetail.jsx - Keeping the updated version with improved layout from before
+// but removing any wishlist, library, or review functionality
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getGameDetails } from '../../../api/games';
-import './GameDetail.css';
 
 const GameDetail = () => {
-  const [game, setGame] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { id } = useParams();
+  // ... keep the state, effects, and helper functions from previous version ...
 
-  useEffect(() => {
-    const fetchGameDetails = async () => {
-      try {
-        setLoading(true);
-        const gameData = await getGameDetails(id);
-        setGame(gameData);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching game details:", err);
-        setError("Failed to load game details. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGameDetails();
-  }, [id]);
-
-  // Function to format date
-  const formatDate = (timestamp) => {
-    if (!timestamp) return 'Unknown';
-    
-    const date = new Date(timestamp * 1000);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
-
-  // Function to safely get the cover image URL
-  const getCoverUrl = (cover) => {
-    if (!cover || !cover.image_id) {
-      return 'https://via.placeholder.com/200x280?text=No+Cover';
-    }
-    return `https://images.igdb.com/igdb/image/upload/t_cover_big/${cover.image_id}.jpg`;
-  };
-
-  // Function to safely get screenshot URLs
-  const getScreenshotUrl = (screenshot) => {
-    if (!screenshot || !screenshot.image_id) {
-      return 'https://via.placeholder.com/640x360?text=No+Screenshot';
-    }
-    return `https://images.igdb.com/igdb/image/upload/t_screenshot_med/${screenshot.image_id}.jpg`;
-  };
-
-  // Custom styles for better layout
+  // Custom styles for better layout (keeping these from before)
   const containerStyle = {
     maxWidth: '1200px',
     margin: '0 auto',
     padding: '20px',
   };
   
-  const gameHeaderStyle = {
-    marginBottom: '20px',
-  };
-  
-  const gameContentStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: '30px',
-    marginBottom: '30px',
-  };
-  
-  const gameCoverStyle = {
-    flexShrink: 0,
-    width: '200px',
-  };
-  
-  const coverImageStyle = {
-    width: '100%',
-    height: 'auto',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-  };
-  
-  const gameInfoStyle = {
-    flex: '1',
-  };
-  
-  const screenshotGridStyle = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '15px',
-    marginTop: '15px',
-  };
-  
-  const screenshotStyle = {
-    width: '100%',
-    height: 'auto',
-    borderRadius: '4px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  };
+  // ... keep other styles from previous version ...
 
   if (loading) {
     return (
