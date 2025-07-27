@@ -44,3 +44,5 @@ Data:
   Primary Data Source: IGDB API (for game details such as title, description, release date, genre, etc.).
 
   User-Generated Data: Reviews and ratings submitted by users.
+
+  Website link is https://gametracker-frontend-i9yv.onrender.com/
