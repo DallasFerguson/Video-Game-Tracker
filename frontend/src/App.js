@@ -1,4 +1,5 @@
-// App.js with all necessary context providers
+// App.js with minimum required context providers
+// Removed LibraryContext, WishlistContext, and ReviewContext since we don't need those features
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/header';
@@ -7,10 +8,7 @@ import Search from './pages/Games/Search/Search';
 import GameDetail from './pages/Games/GameDetail/GameDetail';
 import Trending from './pages/Games/Trending/Trending';
 
-// Import context providers
-import { LibraryProvider } from './contexts/LibraryContext';
-import { WishlistProvider } from './contexts/WishlistContext';
-import { ReviewProvider } from './contexts/ReviewContext';
+// Import only necessary context providers
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 
@@ -29,28 +27,22 @@ function App() {
   }, []);
 
   return (
-    // Wrap the entire application with all necessary providers
+    // Wrap with minimum required providers
     <ThemeProvider>
       <NotificationProvider>
-        <LibraryProvider>
-          <WishlistProvider>
-            <ReviewProvider>
-              <Router>
-                <div className="App" style={{ backgroundColor: '#f8f8f8', color: '#333', minHeight: '100vh' }}>
-                  <Header />
-                  <main style={{ padding: '20px' }}>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/search" element={<Search />} />
-                      <Route path="/trending" element={<Trending />} />
-                      <Route path="/game/:id" element={<GameDetail />} />
-                    </Routes>
-                  </main>
-                </div>
-              </Router>
-            </ReviewProvider>
-          </WishlistProvider>
-        </LibraryProvider>
+        <Router>
+          <div className="App" style={{ backgroundColor: '#f8f8f8', color: '#333', minHeight: '100vh' }}>
+            <Header />
+            <main style={{ padding: '20px' }}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/trending" element={<Trending />} />
+                <Route path="/game/:id" element={<GameDetail />} />
+              </Routes>
+            </main>
+          </div>
+        </Router>
       </NotificationProvider>
     </ThemeProvider>
   );
