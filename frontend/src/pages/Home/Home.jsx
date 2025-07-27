@@ -1,18 +1,43 @@
+// src/pages/Home/Home.jsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useLibrary from '../../hooks/useLibrary';
 import useWishlist from '../../hooks/useWishlist';
-import GameCard from '../../components/games/GameCard/GameCard';
 import Button from '../../components/ui/Button/Button';
 import LoadingSpinner from '../../components/ui/LoadingSpinner/LoadingSpinner';
 import { getTrendingGames } from '../../api/games';
 import './Home.css';
 
 export default function Home() {
-  const { library } = useLibrary();
-  const { wishlist } = useWishlist();
+  // Add error handling for hooks
+  const [libraryData, setLibraryData] = useState({ library: [] });
+  const [wishlistData, setWishlistData] = useState({ wishlist: [] });
+  const [hookError, setHookError] = useState(null);
   const [trendingGames, setTrendingGames] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Try to use hooks safely
+  useEffect(() => {
+    try {
+      const libraryHook = useLibrary();
+      setLibraryData(libraryHook);
+    } catch (error) {
+      console.error('Error using LibraryContext:', error);
+      setHookError(error.message);
+      // Provide fallback data
+      setLibraryData({ library: [] });
+    }
+
+    try {
+      const wishlistHook = useWishlist();
+      setWishlistData(wishlistHook);
+    } catch (error) {
+      console.error('Error using WishlistContext:', error);
+      if (!hookError) setHookError(error.message);
+      // Provide fallback data
+      setWishlistData({ wishlist: [] });
+    }
+  }, []);
 
   useEffect(() => {
     const fetchTrendingGames = async () => {
@@ -30,7 +55,11 @@ export default function Home() {
     fetchTrendingGames();
   }, []);
 
-  //calculate user stats
+  // Use data from state instead of directly from hooks
+  const library = libraryData.library || [];
+  const wishlist = wishlistData.wishlist || [];
+
+  // Calculate user stats
   const stats = {
     totalGames: library.length,
     playing: library.filter(game => game.status === 'playing').length,
@@ -38,6 +67,70 @@ export default function Home() {
     wishlist: wishlist.length
   };
 
+  // If there's an error with the context hooks, show a minimal version
+  if (hookError) {
+    return (
+      <div className="home-page" style={{ padding: '20px', backgroundColor: '#f8f8f8', color: '#333' }}>
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <h1>Game Tracker</h1>
+          <p>Track your gaming journey</p>
+          <p><strong>Note:</strong> Some features are currently unavailable.</p>
+        </div>
+
+        <section style={{ marginBottom: '40px', padding: '20px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <h2>Trending Games</h2>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px' }}>
+              {trendingGames.map(game => (
+                <Link key={game.id} to={`/games/${game.id}`} style={{ textDecoration: 'none' }}>
+                  <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                    <div style={{ height: '300px', backgroundColor: '#f0f0f0', position: 'relative' }}>
+                      {game.cover && game.cover.image_id ? (
+                        <img 
+                          src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`}
+                          alt={game.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                          No Cover Available
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ padding: '15px' }}>
+                      <h3 style={{ margin: '0 0 10px 0' }}>{game.name}</h3>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        {game.first_release_date && (
+                          <span>{new Date(game.first_release_date * 1000).getFullYear()}</span>
+                        )}
+                        {game.rating && (
+                          <span>★ {Math.round(game.rating / 10)}/10</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section style={{ marginBottom: '40px', padding: '20px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <h2>Search for Games</h2>
+          <p>Discover new games to add to your collection.</p>
+          <Link to="/search">
+            <Button variant="primary">Search Games</Button>
+          </Link>
+        </section>
+      </div>
+    );
+  }
+
+  // Regular rendering with context data
   return (
     <div className="home-page">
       {/*Decorative elements*/}
@@ -102,7 +195,34 @@ export default function Home() {
           <div className="games-grid">
             {trendingGames.map(game => (
               <Link key={game.id} to={`/games/${game.id}`}>
-                <GameCard game={game} />
+                <div className="game-card">
+                  <div className="game-card-cover">
+                    {game.cover && game.cover.image_id ? (
+                      <img 
+                        src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`}
+                        alt={game.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div className="game-card-no-image">No Cover Available</div>
+                    )}
+                  </div>
+                  <div className="game-card-info">
+                    <h3 className="game-card-title">{game.name}</h3>
+                    <div className="game-card-meta">
+                      {game.first_release_date && (
+                        <span className="game-card-year">
+                          {new Date(game.first_release_date * 1000).getFullYear()}
+                        </span>
+                      )}
+                      {game.rating && (
+                        <span className="game-card-rating">
+                          ★ {Math.round(game.rating / 10)}/10
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>
