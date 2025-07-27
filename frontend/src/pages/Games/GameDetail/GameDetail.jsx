@@ -1,8 +1,10 @@
-// GameDetail.jsx
+// GameDetail.jsx - Without library/wishlist buttons
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getGameDetails } from '../../../api/games'; // Updated import path
-import './GameDetail.css'; // Adjust if your CSS file has a different path
+import { getGameDetails } from '../../../api/games';
+import Button from '../../../components/ui/Button/Button';
+import LoadingSpinner from '../../../components/ui/LoadingSpinner/LoadingSpinner';
+import './GameDetail.css';
 
 const GameDetail = () => {
   const [game, setGame] = useState(null);
@@ -58,90 +60,178 @@ const GameDetail = () => {
 
   if (loading) {
     return (
-      <div className="game-detail loading">
-        <div className="container">
-          <h2>Loading game details...</h2>
-        </div>
+      <div className="game-detail loading" style={{ textAlign: 'center', padding: '40px' }}>
+        <LoadingSpinner />
+        <p style={{ marginTop: '20px' }}>Loading game details...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="game-detail error">
-        <div className="container">
-          <h2>Error</h2>
-          <p>{error}</p>
-          <Link to="/" className="back-button">Back to Home</Link>
-        </div>
+      <div className="game-detail error" style={{ 
+        textAlign: 'center', 
+        padding: '40px',
+        backgroundColor: '#fff0f0',
+        borderRadius: '8px',
+        maxWidth: '600px',
+        margin: '40px auto',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        <h2 style={{ color: '#e3350d' }}>Error</h2>
+        <p>{error}</p>
+        <Link to="/">
+          <Button variant="primary">Back to Home</Button>
+        </Link>
       </div>
     );
   }
 
   if (!game) {
     return (
-      <div className="game-detail not-found">
-        <div className="container">
-          <h2>Game Not Found</h2>
-          <p>The game you're looking for doesn't exist or has been removed.</p>
-          <Link to="/" className="back-button">Back to Home</Link>
-        </div>
+      <div className="game-detail not-found" style={{ 
+        textAlign: 'center', 
+        padding: '40px',
+        backgroundColor: '#f8f8f8',
+        borderRadius: '8px',
+        maxWidth: '600px',
+        margin: '40px auto',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        <h2>Game Not Found</h2>
+        <p>The game you're looking for doesn't exist or has been removed.</p>
+        <Link to="/">
+          <Button variant="primary">Back to Home</Button>
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="game-detail">
-      <div className="container">
-        <div className="game-header">
-          <h1>{game.name || 'Unknown Game'}</h1>
-          <div className="game-meta">
-            <span className="release-date">
-              Released: {formatDate(game.first_release_date)}
-            </span>
-            {game.rating && (
-              <span className="rating">
-                Rating: {Math.round(game.rating)}%
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="game-content">
-          <div className="game-cover">
+    <div className="game-detail" style={{ 
+      maxWidth: '1200px', 
+      margin: '0 auto', 
+      padding: '20px',
+      backgroundColor: '#f8f8f8',
+      color: '#333'
+    }}>
+      <div className="game-header" style={{ 
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        marginBottom: '30px',
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '8px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        <h1 style={{ margin: '0 0 10px 0', color: '#2a75bb' }}>
+          {game.name || 'Unknown Game'}
+        </h1>
+        
+        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+          <div style={{ 
+            flex: '0 0 300px',
+            height: '450px',
+            overflow: 'hidden',
+            borderRadius: '8px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+          }}>
             <img 
               src={getCoverUrl(game.cover)} 
               alt={game.name || 'Game cover'} 
-              className="cover-image" 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>
-
-          <div className="game-info">
-            <div className="game-summary">
-              <h3>Summary</h3>
+          
+          <div style={{ flex: '1' }}>
+            <div style={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              gap: '10px',
+              marginBottom: '20px'
+            }}>
+              <span style={{ 
+                padding: '8px 12px',
+                backgroundColor: '#f0f4f8',
+                borderRadius: '4px',
+                fontSize: '0.9rem',
+                color: '#666'
+              }}>
+                Released: {formatDate(game.first_release_date)}
+              </span>
+              
+              {game.rating && (
+                <span style={{ 
+                  padding: '8px 12px',
+                  backgroundColor: '#fff8e0',
+                  borderRadius: '4px',
+                  fontSize: '0.9rem',
+                  color: '#666',
+                  fontWeight: 'bold'
+                }}>
+                  Rating: {Math.round(game.rating)}%
+                </span>
+              )}
+            </div>
+            
+            <div style={{ marginBottom: '20px', lineHeight: '1.6' }}>
+              <h3 style={{ marginBottom: '10px', color: '#2a75bb' }}>Summary</h3>
               <p>{game.summary || 'No summary available for this game.'}</p>
             </div>
-
-            <div className="game-details">
-              <div className="genres">
-                <h3>Genres</h3>
+            
+            <div style={{ 
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '20px'
+            }}>
+              <div>
+                <h3 style={{ marginBottom: '10px', color: '#2a75bb' }}>Genres</h3>
                 {game.genres && game.genres.length > 0 ? (
-                  <ul>
+                  <ul style={{ 
+                    listStyle: 'none',
+                    padding: '0',
+                    margin: '0',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '8px'
+                  }}>
                     {game.genres.map((genre, index) => (
-                      <li key={index}>{genre.name}</li>
+                      <li key={index} style={{
+                        padding: '4px 8px',
+                        backgroundColor: '#f0f4f8',
+                        borderRadius: '4px',
+                        fontSize: '0.9rem'
+                      }}>
+                        {genre.name}
+                      </li>
                     ))}
                   </ul>
                 ) : (
                   <p>No genres available</p>
                 )}
               </div>
-
-              <div className="platforms">
-                <h3>Platforms</h3>
+              
+              <div>
+                <h3 style={{ marginBottom: '10px', color: '#2a75bb' }}>Platforms</h3>
                 {game.platforms && game.platforms.length > 0 ? (
-                  <ul>
+                  <ul style={{ 
+                    listStyle: 'none',
+                    padding: '0',
+                    margin: '0',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '8px'
+                  }}>
                     {game.platforms.map((platform, index) => (
-                      <li key={index}>{platform.name}</li>
+                      <li key={index} style={{
+                        padding: '4px 8px',
+                        backgroundColor: '#f0f4f8',
+                        borderRadius: '4px',
+                        fontSize: '0.9rem'
+                      }}>
+                        {platform.name}
+                      </li>
                     ))}
                   </ul>
                 ) : (
@@ -151,28 +241,49 @@ const GameDetail = () => {
             </div>
           </div>
         </div>
-
-        <div className="game-screenshots">
-          <h3>Screenshots</h3>
-          <div className="screenshot-grid">
-            {game.screenshots && game.screenshots.length > 0 ? (
-              game.screenshots.map((screenshot, index) => (
-                <div key={index} className="screenshot">
-                  <img 
-                    src={getScreenshotUrl(screenshot)} 
-                    alt={`Screenshot ${index + 1}`} 
-                  />
-                </div>
-              ))
-            ) : (
-              <p>No screenshots available</p>
-            )}
+      </div>
+      
+      {game.screenshots && game.screenshots.length > 0 && (
+        <div style={{ marginBottom: '30px' }}>
+          <h2 style={{ 
+            marginBottom: '20px', 
+            borderBottom: '2px solid #eaeaea',
+            paddingBottom: '10px',
+            color: '#2a75bb'
+          }}>
+            Screenshots
+          </h2>
+          <div style={{ 
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '20px'
+          }}>
+            {game.screenshots.map((screenshot, index) => (
+              <div key={index} style={{ 
+                borderRadius: '8px',
+                overflow: 'hidden',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+              }}>
+                <img 
+                  src={getScreenshotUrl(screenshot)} 
+                  alt={`Screenshot ${index + 1}`}
+                  style={{ 
+                    width: '100%',
+                    height: 'auto',
+                    display: 'block'
+                  }}
+                />
+              </div>
+            ))}
           </div>
         </div>
-
-        <div className="navigation">
-          <Link to="/" className="back-button">Back to Home</Link>
-        </div>
+      )}
+      
+      <div style={{ textAlign: 'center', marginTop: '40px' }}>
+        <Link to="/">
+          <Button variant="primary">Back to Home</Button>
+        </Link>
       </div>
     </div>
   );
