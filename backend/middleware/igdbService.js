@@ -142,13 +142,20 @@ exports.getGameDetails = async (gameId) => {
  * @returns {Promise<Array>} Array of trending game objects
  */
 exports.getTrendingGames = async (limit = 5) => {
-  //get games from the last 6 months with highest ratings
-  const sixMonthsAgo = Math.floor(Date.now() / 1000) - 15552000;
+  // Modified query to get more recognizable games:
+  // 1. Filter for higher popularity
+  // 2. Include games from the last 12 months (instead of 6)
+  // 3. Ensure they have good ratings AND high popularity
+  const twelveMonthsAgo = Math.floor(Date.now() / 1000) - 31104000; // 12 months in seconds
   
   const body = `
-    fields name, cover.url, cover.image_id, first_release_date, rating, genres.name, genres.id;
-    sort rating desc;
-    where rating != null & first_release_date > ${sixMonthsAgo};
+    fields name, cover.url, cover.image_id, first_release_date, rating, popularity, genres.name, genres.id;
+    where 
+      rating >= 75 & 
+      popularity > 80 &
+      first_release_date > ${twelveMonthsAgo} &
+      cover.image_id != null;
+    sort popularity desc;
     limit ${limit};
   `;
 
