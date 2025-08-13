@@ -7,10 +7,10 @@ const API_BASE_URL = 'https://gametracker-api.onrender.com/api';
 // Log the API URL for debugging
 console.log('API Base URL:', API_BASE_URL);
 
-// Configure axios instance with proper error handling
+//configure axios instance with proper error handling
 const gamesApi = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000, // 10 second timeout
+  timeout: 10000, //10 second timeout
   headers: {
     'Content-Type': 'application/json'
   }
@@ -73,26 +73,15 @@ export const getGameDetails = async (gameId) => {
  */
 export const getTrendingGames = async (limit = 5) => {
   try {
-    console.log('Fetching trending games with limit:', limit);
     const response = await gamesApi.get('/games/trending', {
       params: { limit }
     });
-    
-    // Enhanced error logging
-    if (!response.data || !Array.isArray(response.data)) {
-      console.error('Unexpected trending games response format:', response.data);
-      throw new Error('Invalid response format from trending games API');
-    }
-    
-    console.log('Received trending games:', response.data.length);
-    
     return response.data.map(game => ({
       id: game.id,
       name: game.name,
       cover: game.cover,
       first_release_date: game.first_release_date,
-      rating: game.rating,
-      popularity: game.popularity
+      rating: game.rating
     }));
   } catch (error) {
     console.error('Error fetching trending games:', error);
