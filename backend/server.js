@@ -133,17 +133,21 @@ app.get('/api/games/search', async (req, res) => {
   }
 });
 
-// Trending games endpoint
+// Trending games endpoint - UPDATED
 app.get('/api/games/trending', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 5;
     
     console.log(`Fetching trending games with limit: ${limit}`);
     
+    // Updated query to focus on popular games that are widely recognized
     const igdbQuery = `
-      fields name, cover.image_id, first_release_date, rating;
-      where rating > 75;
-      sort rating desc;
+      fields name, cover.image_id, first_release_date, rating, popularity;
+      where 
+        rating > 75 & 
+        popularity > 80 &
+        cover.image_id != null;
+      sort popularity desc;
       limit ${limit};
     `;
     
